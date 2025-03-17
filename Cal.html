@@ -1,0 +1,141 @@
+<html>
+<body>
+    
+    <div class="converter">
+        <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
+        <label for="#">Input Gram</label><input type="number" id="gram" placeholder="Gram">
+        <label for="#">Price per Gram</label>
+        <input type="number" id="pricePerGramConversion" placeholder="Price per Gram"><br>
+        <label for="#">VAT (%)</label>
+        <input type="number" id="vatPercentageConversion" placeholder="VAT %">
+        <label for="#">Making Charge</label>
+        <input type="number" id="makingChargeConversion" placeholder="Making Charge"><br>
+        <button onclick="convertToVoriAnaRoti()">Convert</button><br>
+        <label for="#">Vori</label><input type="text" id="resultVori" placeholder="Result in Vori" disabled=""><br>
+        <label for="#">Ana</label><input type="text" id="resultAna" placeholder="Result in Ana" disabled=""><br>
+        <label for="#">Roti</label><input type="text" id="resultRoti" placeholder="Result in Roti" disabled=""><br>
+        <label for="#">Point</label><input type="text" id="resultPoint" placeholder="Result in Point" disabled=""><br>
+        <label for="#">Total Price</label><input type="text" id="resultTotalPrice" placeholder="Total Price" disabled="">
+    </div>
+<div class="converter">
+        <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
+        <label for="#">Vori</label>
+        <input type="number" id="vori" placeholder="Vori">
+        <label for="#">Ana</label>
+        <input type="number" max="15" min="0" id="ana" placeholder="Ana"><br>
+        <label for="#">Roti</label>
+        <input type="number" max="5" min="0" id="roti" placeholder="Roti">
+        <label for="#">Point</label>
+        <input type="number" max="9" min="0" id="point" placeholder="Point"><br>
+        <label for="#">Price per Gram</label>
+        <input type="number" id="pricePerGram" placeholder="Price per Gram"><br>
+       
+        <button onclick="convertToGram()">Convert</button><br>
+        <input type="text" id="resultGram" placeholder="Result in Gram" disabled="">
+        <label for="#">Gram</label>
+        <input type="text" id="totalPrice" placeholder="Total Price" disabled="">
+    </div>
+
+
+
+<script>
+    function convertToGram() {
+        let vori = parseFloat(document.getElementById('vori').value) || 0;
+        let ana = parseInt(document.getElementById('ana').value) || 0;
+        let roti = parseInt(document.getElementById('roti').value) || 0;
+        let point = parseInt(document.getElementById('point').value) || 0;
+        let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
+        let vatPercentage = parseFloat(document.getElementById('vatPercentage').value) || 0;
+        let makingCharge = parseFloat(document.getElementById('makingCharge').value) || 0;
+
+        // Validate Ana, Roti, and Point inputs
+        if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
+        ana !== parseFloat(document.getElementById('ana').value) ||
+        roti !== parseFloat(document.getElementById('roti').value) ||
+        point !== parseFloat(document.getElementById('point').value)) {
+            alert("Please enter valid integer values within specified ranges for Ana, Roti, and Point. Accepted Range is Ana: 0-15, Roti: 0-5, point: 0-9");
+            return;
+        }
+
+        let gram = vori * 11.6640 + ana * 0.7290 + roti * 0.1215 + point * 0.0122;
+        document.getElementById('resultGram').value = gram.toFixed(4);
+
+        // Calculate the base price
+        let basePrice = gram * pricePerGram;
+        
+        // Apply VAT
+        let vatAmount = (basePrice * vatPercentage) / 100;
+        
+        // Apply making charge
+        let totalPrice = basePrice + vatAmount + makingCharge;
+
+        document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+    }
+
+    function convertToVoriAnaRoti() {
+        let gram = parseFloat(document.getElementById('gram').value);
+        let pricePerGram = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
+        let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
+        let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
+
+        if (gram < 0 || isNaN(gram)) {
+            alert("Please enter a valid positive number for Gram.");
+            return;
+        }
+
+        let vori = Math.floor(gram / 11.6640);
+        let remainder = gram % 11.6640;
+        let ana = Math.floor(remainder / 0.7290);
+        remainder %= 0.7290;
+        let roti = Math.floor(remainder / 0.1215);
+        remainder %= 0.1215;
+        let point = Math.floor(remainder / 0.0122);
+        document.getElementById('resultVori').value = vori;
+        document.getElementById('resultAna').value = ana;
+        document.getElementById('resultRoti').value = roti;
+        document.getElementById('resultPoint').value = point;
+
+        // Calculate the base price
+        let basePrice = gram * pricePerGram;
+        
+        // Apply VAT
+        let vatAmount = (basePrice * vatPercentage) / 100;
+        
+        // Apply making charge
+        let totalPrice = basePrice + vatAmount + makingCharge;
+
+        document.getElementById('resultTotalPrice').value = totalPrice.toFixed(2);
+    }
+</script>
+
+<style>
+    .converter {
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: auto;
+        background-color: #f9f9f9;
+    }
+    h2 {
+        margin-top: 0;
+    }
+    input[type="number"],
+    input[type="text"] {
+        margin: 5px;
+        padding: 8px;
+        width: 150px;
+    }
+    button {
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+</body>
+</html>
