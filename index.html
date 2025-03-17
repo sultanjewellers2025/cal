@@ -1,42 +1,47 @@
 <html>
 <body>
-    
-    <div class="converter">
-        <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
-        <label for="#">Input Gram</label><input type="number" id="gram" placeholder="Gram">
-        <label for="#">Price per Gram</label>
-        <input type="number" id="pricePerGramConversion" placeholder="Price per Gram"><br>
-        <label for="#">VAT (%)</label>
-        <input type="number" id="vatPercentageConversion" placeholder="VAT %">
-        <label for="#">Making Charge</label>
-        <input type="number" id="makingChargeConversion" placeholder="Making Charge"><br>
-        <button onclick="convertToVoriAnaRoti()">Convert</button><br>
-        <label for="#">Vori</label><input type="text" id="resultVori" placeholder="Result in Vori" disabled=""><br>
-        <label for="#">Ana</label><input type="text" id="resultAna" placeholder="Result in Ana" disabled=""><br>
-        <label for="#">Roti</label><input type="text" id="resultRoti" placeholder="Result in Roti" disabled=""><br>
-        <label for="#">Point</label><input type="text" id="resultPoint" placeholder="Result in Point" disabled=""><br>
-        <label for="#">Total Price</label><input type="text" id="resultTotalPrice" placeholder="Total Price" disabled="">
-    </div>
+
 <div class="converter">
-        <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
-        <label for="#">Vori</label>
-        <input type="number" id="vori" placeholder="Vori">
-        <label for="#">Ana</label>
-        <input type="number" max="15" min="0" id="ana" placeholder="Ana"><br>
-        <label for="#">Roti</label>
-        <input type="number" max="5" min="0" id="roti" placeholder="Roti">
-        <label for="#">Point</label>
-        <input type="number" max="9" min="0" id="point" placeholder="Point"><br>
-        <label for="#">Price per Gram</label>
-        <input type="number" id="pricePerGram" placeholder="Price per Gram"><br>
-       
-        <button onclick="convertToGram()">Convert</button><br>
-        <input type="text" id="resultGram" placeholder="Result in Gram" disabled="">
-        <label for="#">Gram</label>
-        <input type="text" id="totalPrice" placeholder="Total Price" disabled="">
-    </div>
+    <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
+    <label for="#">Input Gram</label>
+    <input type="number" id="gram" placeholder="Gram">
+    <label for="#">Price per Gram</label>
+    <input type="number" id="pricePerGramConversion" placeholder="Price per Gram"><br>
+    <label for="#">VAT (%)</label>
+    <input type="number" id="vatPercentageConversion" placeholder="VAT %">
+    <label for="#">Making Charge</label>
+    <input type="number" id="makingChargeConversion" placeholder="Making Charge"><br>
+    <button onclick="convertToVoriAnaRoti()">Convert</button><br>
+    <label for="#">Vori</label>
+    <input type="text" id="resultVori" placeholder="Result in Vori" disabled=""><br>
+    <label for="#">Ana</label>
+    <input type="text" id="resultAna" placeholder="Result in Ana" disabled=""><br>
+    <label for="#">Roti</label>
+    <input type="text" id="resultRoti" placeholder="Result in Roti" disabled=""><br>
+    <label for="#">Point</label>
+    <input type="text" id="resultPoint" placeholder="Result in Point" disabled=""><br>
+    <label for="#">Total Price</label>
+    <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled="">
+</div>
 
-
+<div class="converter">
+    <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
+    <label for="#">Vori</label>
+    <input type="number" id="vori" placeholder="Vori">
+    <label for="#">Ana</label>
+    <input type="number" max="15" min="0" id="ana" placeholder="Ana"><br>
+    <label for="#">Roti</label>
+    <input type="number" max="5" min="0" id="roti" placeholder="Roti">
+    <label for="#">Point</label>
+    <input type="number" max="9" min="0" id="point" placeholder="Point"><br>
+    <label for="#">Price per Gram</label>
+    <input type="number" id="pricePerGram" placeholder="Price per Gram"><br>
+    
+    <button onclick="convertToGram()">Convert</button><br>
+    <input type="text" id="resultGram" placeholder="Result in Gram" disabled="">
+    <label for="#">Gram</label>
+    <input type="text" id="totalPrice" placeholder="Total Price" disabled="">
+</div>
 
 <script>
     function convertToGram() {
@@ -113,28 +118,47 @@
         margin: auto;
         padding: 20px;
         border: 1px solid #ccc;
-        border-radius: auto;
+        border-radius: 8px;
         background-color: #f9f9f9;
+        max-width: 600px;
+        width: 100%;
     }
     h2 {
         margin-top: 0;
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
     }
     input[type="number"],
     input[type="text"] {
-        margin: 5px;
-        padding: 8px;
-        width: 150px;
+        margin: 5px 0 10px;
+        padding: 10px;
+        width: calc(100% - 20px); /* Make inputs fill the container */
+        box-sizing: border-box;
     }
     button {
-        padding: 8px 16px;
+        padding: 10px 20px;
         background-color: #4CAF50;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        width: 100%;
     }
     button:hover {
         background-color: #45a049;
+    }
+
+    /* Mobile responsive styles */
+    @media (max-width: 600px) {
+        .converter {
+            padding: 15px;
+        }
+        button {
+            width: 100%; /* Make the button full width on small screens */
+        }
     }
 </style>
 </body>
