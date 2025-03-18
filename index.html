@@ -1,46 +1,174 @@
 <html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .converter {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:disabled {
+            background-color: #f1f1f1;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .converter input[type="number"]:focus,
+        .converter input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .converter .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .converter .row div {
+            flex: 1 1 45%; /* allows the inputs to have a flexible width */
+        }
+
+        .converter .row div label {
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .converter {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .converter .row div {
+                flex: 1 1 100%; /* Makes inputs full-width on smaller screens */
+            }
+        }
+    </style>
+</head>
+
 <body>
 
 <div class="converter">
     <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
-    <label for="#">Input Gram</label>
+    <label for="gram">Input Gram</label>
     <input type="number" id="gram" placeholder="Gram">
-    <label for="#">Price per Gram</label>
-    <input type="number" id="pricePerGramConversion" placeholder="Price per Gram"><br>
-    <label for="#">VAT (%)</label>
-    <input type="number" id="vatPercentageConversion" placeholder="VAT %">
-    <label for="#">Making Charge</label>
-    <input type="number" id="makingChargeConversion" placeholder="Making Charge"><br>
-    <button onclick="convertToVoriAnaRoti()">Convert</button><br>
-    <label for="#">Vori</label>
-    <input type="text" id="resultVori" placeholder="Result in Vori" disabled=""><br>
-    <label for="#">Ana</label>
-    <input type="text" id="resultAna" placeholder="Result in Ana" disabled=""><br>
-    <label for="#">Roti</label>
-    <input type="text" id="resultRoti" placeholder="Result in Roti" disabled=""><br>
-    <label for="#">Point</label>
-    <input type="text" id="resultPoint" placeholder="Result in Point" disabled=""><br>
-    <label for="#">Total Price</label>
-    <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled="">
+    <label for="pricePerGramConversion">Price per Gram</label>
+    <input type="number" id="pricePerGramConversion" placeholder="Price per Gram">
+    
+    <div class="row">
+        <div>
+            <label for="vatPercentageConversion">VAT (%)</label>
+            <input type="number" id="vatPercentageConversion" placeholder="VAT %">
+        </div>
+        <div>
+            <label for="makingChargeConversion">Making Charge</label>
+            <input type="number" id="makingChargeConversion" placeholder="Making Charge">
+        </div>
+    </div>
+    
+    <button onclick="convertToVoriAnaRoti()">Convert</button>
+    
+    <label for="resultVori">Vori</label>
+    <input type="text" id="resultVori" placeholder="Result in Vori" disabled>
+
+    <label for="resultAna">Ana</label>
+    <input type="text" id="resultAna" placeholder="Result in Ana" disabled>
+
+    <label for="resultRoti">Roti</label>
+    <input type="text" id="resultRoti" placeholder="Result in Roti" disabled>
+
+    <label for="resultPoint">Point</label>
+    <input type="text" id="resultPoint" placeholder="Result in Point" disabled>
+
+    <label for="resultTotalPrice">Total Price</label>
+    <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled>
 </div>
 
 <div class="converter">
     <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
-    <label for="#">Vori</label>
-    <input type="number" id="vori" placeholder="Vori">
-    <label for="#">Ana</label>
-    <input type="number" max="15" min="0" id="ana" placeholder="Ana"><br>
-    <label for="#">Roti</label>
-    <input type="number" max="5" min="0" id="roti" placeholder="Roti">
-    <label for="#">Point</label>
-    <input type="number" max="9" min="0" id="point" placeholder="Point"><br>
-    <label for="#">Price per Gram</label>
-    <input type="number" id="pricePerGram" placeholder="Price per Gram"><br>
     
-    <button onclick="convertToGram()">Convert</button><br>
-    <input type="text" id="resultGram" placeholder="Result in Gram" disabled="">
-    <label for="#">Gram</label>
-    <input type="text" id="totalPrice" placeholder="Total Price" disabled="">
+    <div class="row">
+        <div>
+            <label for="vori">Vori</label>
+            <input type="number" id="vori" placeholder="Vori">
+        </div>
+        <div>
+            <label for="ana">Ana</label>
+            <input type="number" max="15" min="0" id="ana" placeholder="Ana">
+        </div>
+    </div>
+
+    <div class="row">
+        <div>
+            <label for="roti">Roti</label>
+            <input type="number" max="5" min="0" id="roti" placeholder="Roti">
+        </div>
+        <div>
+            <label for="point">Point</label>
+            <input type="number" max="9" min="0" id="point" placeholder="Point">
+        </div>
+    </div>
+
+    <label for="pricePerGram">Price per Gram</label>
+    <input type="number" id="pricePerGram" placeholder="Price per Gram">
+    
+    <button onclick="convertToGram()">Convert</button>
+    
+    <label for="resultGram">Result in Gram</label>
+    <input type="text" id="resultGram" placeholder="Result in Gram" disabled>
+
+    <label for="totalPrice">Total Price</label>
+    <input type="text" id="totalPrice" placeholder="Total Price" disabled>
 </div>
 
 <script>
@@ -113,53 +241,5 @@
     }
 </script>
 
-<style>
-    .converter {
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        max-width: 600px;
-        width: 100%;
-    }
-    h2 {
-        margin-top: 0;
-        text-align: center;
-    }
-    label {
-        display: block;
-        margin-top: 10px;
-    }
-    input[type="number"],
-    input[type="text"] {
-        margin: 5px 0 10px;
-        padding: 10px;
-        width: calc(100% - 20px); /* Make inputs fill the container */
-        box-sizing: border-box;
-    }
-    button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        width: 100%;
-    }
-    button:hover {
-        background-color: #45a049;
-    }
-
-    /* Mobile responsive styles */
-    @media (max-width: 600px) {
-        .converter {
-            padding: 15px;
-        }
-        button {
-            width: 100%; /* Make the button full width on small screens */
-        }
-    }
-</style>
 </body>
 </html>
