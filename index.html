@@ -172,50 +172,47 @@
 </div>
 
 <script>
-    function convertToGram() {
-        let vori = parseFloat(document.getElementById('vori').value) || 0;
-        let ana = parseInt(document.getElementById('ana').value) || 0;
-        let roti = parseInt(document.getElementById('roti').value) || 0;
-        let point = parseInt(document.getElementById('point').value) || 0;
-        let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
-        let vatPercentage = parseFloat(document.getElementById('vatPercentage').value) || 0;
-        let makingCharge = parseFloat(document.getElementById('makingCharge').value) || 0;
+   function convertToGram() {
+    let vori = parseFloat(document.getElementById('vori').value) || 0;
+    let ana = parseInt(document.getElementById('ana').value) || 0;
+    let roti = parseInt(document.getElementById('roti').value) || 0;
+    let point = parseInt(document.getElementById('point').value) || 0;
+    let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
+    
+    // Correct ID for VAT percentage and making charge from second converter
+    let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;  // Updated ID
+    let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0;  // Updated ID
 
-        // Validate Ana, Roti, and Point inputs
-        if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
-        ana !== parseFloat(document.getElementById('ana').value) ||
-        roti !== parseFloat(document.getElementById('roti').value) ||
-        point !== parseFloat(document.getElementById('point').value)) {
-            alert("Please enter valid integer values within specified ranges for Ana, Roti, and Point. Accepted Range is Ana: 0-15, Roti: 0-5, point: 0-9");
-            return;
-        }
-
-        let gram = vori * 11.6640 + ana * 0.7290 + roti * 0.1215 + point * 0.0122;
-        document.getElementById('resultGram').value = gram.toFixed(4);
-
-        // Calculate the base price
-        let basePrice = gram * pricePerGram;
-        
-        // Apply VAT
-        let vatAmount = (basePrice * vatPercentage) / 100;
-        
-        // Apply making charge
-        let totalPrice = basePrice + vatAmount + makingCharge;
-
-        document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+    // Validate Ana, Roti, and Point inputs
+    if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
+    ana !== parseFloat(document.getElementById('ana').value) ||
+    roti !== parseFloat(document.getElementById('roti').value) ||
+    point !== parseFloat(document.getElementById('point').value)) {
+        alert("Please enter valid integer values within specified ranges for Ana, Roti, and Point. Accepted Range is Ana: 0-15, Roti: 0-5, point: 0-9");
+        return;
     }
 
-    function convertToVoriAnaRoti() {
+    // Calculate the weight in grams
+    let gram = vori * 11.6640 + ana * 0.7290 + roti * 0.1215 + point * 0.0122;
+    document.getElementById('resultGram').value = gram.toFixed(4);
+
+    // Calculate the base price
+    let basePrice = gram * pricePerGram;
+    
+    // Apply VAT
+    let vatAmount = (basePrice * vatPercentage) / 100;
+    
+    // Apply making charge
+    let totalPrice = basePrice + vatAmount + makingCharge;
+
+    document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+    }
+function convertToVoriAnaRoti() {
         let gram = parseFloat(document.getElementById('gram').value);
-        let pricePerGram = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
-        let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
-        let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
-
         if (gram < 0 || isNaN(gram)) {
-            alert("Please enter a valid positive number for Gram.");
-            return;
+        alert("Please enter a valid positive number for Gram.");
+        return;
         }
-
         let vori = Math.floor(gram / 11.6640);
         let remainder = gram % 11.6640;
         let ana = Math.floor(remainder / 0.7290);
@@ -227,19 +224,35 @@
         document.getElementById('resultAna').value = ana;
         document.getElementById('resultRoti').value = roti;
         document.getElementById('resultPoint').value = point;
-
-        // Calculate the base price
-        let basePrice = gram * pricePerGram;
-        
-        // Apply VAT
-        let vatAmount = (basePrice * vatPercentage) / 100;
-        
-        // Apply making charge
-        let totalPrice = basePrice + vatAmount + makingCharge;
-
-        document.getElementById('resultTotalPrice').value = totalPrice.toFixed(2);
-    }
+        }
 </script>
+<h1>Live Gold Price</h1>
+    <p>Current Gold Price: <span id="gold-price">Loading...</span></p>
 
+    <script>
+        // Function to fetch live gold price (replace this URL with your own API or scraping endpoint)
+        function fetchGoldPrice() {
+            // Fake API URL, replace with your live API or server-side endpoint for gold prices
+            const apiUrl = 'https://bajus.org/gold-price/'; 
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the data returned contains a 'price' key with the gold price
+                    const goldPrice = data.price;
+                    document.getElementById('gold-price').innerText = `$${goldPrice}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching gold price:', error);
+                    document.getElementById('gold-price').innerText = 'Error fetching price';
+                });
+        }
+
+        // Fetch the gold price every 30 minutes (1800000 ms)
+        setInterval(fetchGoldPrice, 1800000);
+
+        // Initial fetch when the page loads
+        fetchGoldPrice();
+    </script>
 </body>
 </html>
