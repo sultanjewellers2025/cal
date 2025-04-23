@@ -237,6 +237,26 @@
     }
 </script>
 
+<button onclick="showGoldPrices()">Show Live Gold Prices</button>
+<div id="goldPricesPopup" style="display:none;">
+    <h3>Live Gold Prices</h3>
+    <p id="price22k"></p>
+    <p id="price21k"></p>
+    <p id="price18k"></p>
+    <p id="priceSan"></p>
+</div>
+
+<script>
+    async function showGoldPrices() {
+        const res = await fetch('/api/gold-prices');
+        const data = await res.json();
+        document.getElementById('price22k').innerText = `22K: ${data["22K"]}`;
+        document.getElementById('price21k').innerText = `21K: ${data["21K"]}`;
+        document.getElementById('price18k').innerText = `18K: ${data["18K"]}`;
+        document.getElementById('priceSan').innerText = `SAN: ${data["SAN"]}`;
+        document.getElementById('goldPricesPopup').style.display = 'block';
+    }
+</script>
 
 
 </body>
