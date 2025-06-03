@@ -184,11 +184,82 @@
                 flex: 1 1 100%; /* Stack elements in rows on very small screens */
             }
         }
+        .author-popup {
+    /* Positioning */
+    position: fixed; /* Makes the element stick to the viewport */
+    bottom: 20px;    /* 20 pixels from the bottom */
+    right: 20px;     /* 20 pixels from the right */
+    z-index: 1000;   /* Ensures it stays on top of other content */
+
+    /* Styling */
+    background-color: #333; /* Dark background */
+    color: #fff;            /* White text (for general text) */
+    padding: 15px 20px;      /* Padding inside the box */
+    border-radius: 8px;      /* Slightly rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    font-family: 'Roboto', sans-serif; /* Matches your existing font */
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.4;
+
+    /* Optional: Fade-in animation */
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+    animation-delay: 2s; /* Delay the pop-up appearance */
+}
+
+/* Style for the link inside the popup */
+.author-popup a {
+    color: #007bff; /* A distinct blue color for the link */
+    text-decoration: none; /* Removes the default underline */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+}
+
+/* Style for the link when hovered */
+.author-popup a:hover {
+    color: #80bdff; /* Lighter blue on hover */
+    text-decoration: underline; /* Add underline on hover for better UX */
+}
+
+
+.author-popup strong {
+    font-size: 16px;
+    font-weight: 700; /* Bolder name */
+    display: block; /* Puts the name on a new line */
+    margin-top: 5px;
+}
+
+/* Keyframe animation for fade-in effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Starts slightly below and moves up */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Optional: Media query for smaller screens */
+@media (max-width: 600px) {
+    .author-popup {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    .author-popup strong {
+        font-size: 14px;
+    }
+}
     </style>
 </head>
 
 <body>
-
+<div class="author-popup">
+    <p>Developed by <br> <a href="https://shatabdi.bio.link/" target="_blank" rel="noopener noreferrer"><strong>SSS</strong></a></p>
+</div>
     <div class="main-container">
         <div class="converter">
             <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
