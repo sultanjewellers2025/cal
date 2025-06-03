@@ -184,56 +184,69 @@
                 flex: 1 1 100%; /* Stack elements in rows on very small screens */
             }
         }
-        .author-popup {
+        
+
+
+.author-popup {
     /* Positioning */
-    position: fixed; /* Makes the element stick to the viewport */
-    bottom: 20px;    /* 20 pixels from the bottom */
-    right: 20px;     /* 20 pixels from the right */
-    z-index: 1000;   /* Ensures it stays on top of other content */
+    position: fixed;
+    bottom: 12px; /* Very close to the bottom */
+    right: 12px;  /* Very close to the right */
+    z-index: 1000; /* Stays on top */
 
-    /* Styling */
-    background-color: #333; /* Dark background */
-    color: #fff;            /* White text (for general text) */
-    padding: 15px 20px;      /* Padding inside the box */
-    border-radius: 8px;      /* Slightly rounded corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
-    font-family: 'Roboto', sans-serif; /* Matches your existing font */
-    font-size: 14px;
-    text-align: center;
-    line-height: 1.4;
+    /* Sizing & Shape */
+    padding: 8px 15px; /* Minimal padding */
+    border-radius: 6px; /* Slightly less rounded for sharpness */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Very subtle shadow */
+    border: 1px solid rgba(220, 220, 220, 0.7); /* Faint, light border */
 
-    /* Optional: Fade-in animation */
+    /* Colors & Typography */
+    background: rgba(255, 255, 255, 0.95); /* Near opaque white background */
+    color: #666; /* Soft grey text */
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; /* Modern sans-serif font */
+    font-size: 12px; /* Very small font size */
+    text-align: right; /* Align text to the right for concise look */
+    line-height: 1.2; /* Tight line height */
+
+    /* Entrance Animation */
     opacity: 0;
-    animation: fadeIn 0.8s forwards;
-    animation-delay: 2s; /* Delay the pop-up appearance */
+    transform: translateY(10px); /* Starts slightly below */
+    animation: fadeInSlideUp 0.4s forwards ease-out; /* Quick and smooth animation */
+    animation-delay: 1.5s; /* Appears after a brief delay */
 }
 
-/* Style for the link inside the popup */
+/* Link Styling */
 .author-popup a {
-    color: #007bff; /* A distinct blue color for the link */
-    text-decoration: none; /* Removes the default underline */
-    transition: color 0.3s ease; /* Smooth color transition on hover */
+    color: #4A90E2; /* Clean, vibrant blue link color */
+    text-decoration: none; /* No underline by default */
+    font-weight: 500; /* Medium font weight */
+    transition: color 0.2s ease-out; /* Fast transition for hover */
 }
 
-/* Style for the link when hovered */
 .author-popup a:hover {
-    color: #80bdff; /* Lighter blue on hover */
-    text-decoration: underline; /* Add underline on hover for better UX */
+    color: #2F6FD4; /* Slightly darker blue on hover */
+    text-decoration: underline; /* Underline on hover */
 }
 
-
+/* Author Name Styling */
 .author-popup strong {
-    font-size: 16px;
-    font-weight: 700; /* Bolder name */
-    display: block; /* Puts the name on a new line */
-    margin-top: 5px;
+    font-size: 13px; /* Slightly larger for emphasis */
+    font-weight: 600; /* Semi-bold */
+    display: inline; /* Keeps it inline with "Developed by" */
+    margin-left: 3px; /* Small space after "Developed by" */
 }
 
-/* Keyframe animation for fade-in effect */
-@keyframes fadeIn {
+/* Paragraph margin reset for compactness */
+.author-popup p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Keyframe for the entrance animation */
+@keyframes fadeInSlideUp {
     from {
         opacity: 0;
-        transform: translateY(20px); /* Starts slightly below and moves up */
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -241,18 +254,19 @@
     }
 }
 
-/* Optional: Media query for smaller screens */
-@media (max-width: 600px) {
+/* Media query for very small screens (phones in portrait) */
+@media (max-width: 400px) {
     .author-popup {
-        bottom: 10px;
-        right: 10px;
-        padding: 10px 15px;
-        font-size: 12px;
+        bottom: 8px;
+        right: 8px;
+        padding: 6px 12px;
+        font-size: 11px;
     }
     .author-popup strong {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
+
     </style>
 </head>
 
