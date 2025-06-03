@@ -1,96 +1,187 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Weight & Price Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #007bff; /* A nice blue for buttons/accents */
+            --primary-hover-color: #0056b3;
+            --background-color: #f8f9fa; /* Lighter background */
+            --card-background: #ffffff;
+            --text-color: #343a40;
+            --border-color: #ced4da;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --focus-border-color: #80bdff; /* Lighter blue for focus */
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top for better content flow */
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        .main-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 30px; /* Space between converter cards */
+            max-width: 1200px; /* Max width for the whole layout */
+            width: 100%;
+            justify-content: center; /* Center cards when they wrap */
         }
 
         .converter {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--card-background);
+            border-radius: 12px; /* Slightly more rounded corners */
+            padding: 30px;
+            flex: 1; /* Allow converters to grow and shrink */
+            min-width: 320px; /* Minimum width before wrapping */
+            max-width: 550px; /* Max width for individual converter */
+            box-shadow: 0 6px 15px var(--shadow-color); /* Softer, larger shadow */
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
         }
 
         h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            color: var(--primary-color); /* Use primary color for headings */
+            margin-bottom: 25px;
+            font-weight: 700; /* Bolder heading */
         }
 
         label {
             display: block;
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-color);
+            font-weight: 500; /* Slightly bolder label */
         }
 
         input[type="number"],
-        input[type="text"] {
+        input[type="text"],
+        select { /* Added select to apply consistent styling */
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            margin-bottom: 18px; /* More space below inputs */
+            border: 1px solid var(--border-color);
+            border-radius: 6px; /* Slightly more rounded input fields */
             box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for focus */
         }
 
         input[type="text"]:disabled {
-            background-color: #f1f1f1;
+            background-color: #e9ecef; /* Lighter disabled background */
+            cursor: not-allowed;
+            color: #6c757d; /* Slightly muted text color for disabled */
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .converter input[type="number"]:focus,
-        .converter input[type="text"]:focus {
-            border-color: #4CAF50;
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus { /* Added select to apply consistent styling */
+            border-color: var(--focus-border-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle focus ring */
             outline: none;
         }
 
-        .converter .row {
+        /* Removed button styles as buttons are removed from other sections */
+        /*
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
+        */
+
+        .row {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 20px; /* More space between columns in a row */
+            flex-wrap: wrap; /* Allow columns to wrap */
+            margin-bottom: -5px; /* Adjust margin if inputs have default bottom margin */
         }
 
-        .converter .row div {
-            flex: 1 1 45%; /* allows the inputs to have a flexible width */
+        .row > div {
+            flex: 1; /* Each div in a row takes equal space */
+            min-width: 130px; /* Minimum width for the inner div */
         }
 
-        .converter .row div label {
-            text-align: left;
+        /* Adjust input margins within rows to maintain consistency */
+        .row input, .row select { /* Added select to apply consistent styling */
+            margin-bottom: 18px;
         }
 
-        @media (max-width: 768px) {
+        /* Result display style */
+        .result {
+            background: #e9fbe9;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #28a745;
+            border-radius: 5px;
+            color: #222;
+        }
+        .result strong {
+            color: #000;
+        }
+
+        /* Specific adjustments for smaller screens */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column; /* Stack converters vertically on medium screens */
+                align-items: center; /* Center stacked converters */
+            }
             .converter {
-                width: 95%;
+                max-width: 450px; /* Limit width of stacked converters */
+                width: 95%; /* Adjust width for smaller screens */
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
                 padding: 15px;
             }
-
-            .converter .row div {
-                flex: 1 1 100%; /* Makes inputs full-width on smaller screens */
+            .converter {
+                padding: 20px;
+                min-width: unset; /* Remove min-width to allow full flexibility */
+            }
+            h2 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+            input[type="number"],
+            input[type="text"],
+            select { /* Added select for consistency */
+                padding: 10px;
+                font-size: 15px;
+                margin-bottom: 15px;
+            }
+            .row {
+                gap: 15px;
+            }
+            .row > div {
+                flex: 1 1 100%; /* Stack elements in rows on very small screens */
             }
         }
     </style>
@@ -98,166 +189,283 @@
 
 <body>
 
-<div class="converter">
-    <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
-    <label for="gram">Input Gram</label>
-    <input type="number" id="gram" placeholder="Gram">
-    <label for="pricePerGramConversion">Price per Gram</label>
-    <input type="number" id="pricePerGramConversion" placeholder="Price per Gram">
-    
-    <div class="row">
-        <div>
-            <label for="vatPercentageConversion">VAT (%)</label>
-            <input type="number" id="vatPercentageConversion" placeholder="VAT %">
+    <div class="main-container">
+        <div class="converter">
+            <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
+            <label for="gram">Input Gram</label>
+            <input type="number" id="gram" placeholder="Enter Grams" step="0.0001">
+            <label for="pricePerGramConversion">Price per Gram</label>
+            <input type="number" id="pricePerGramConversion" placeholder="Price per Gram" step="0.01">
+
+            <div class="row">
+                <div>
+                    <label for="vatPercentageConversion">VAT (%)</label>
+                    <input type="number" id="vatPercentageConversion" placeholder="e.g., 5" step="0.01">
+                </div>
+                <div>
+                    <label for="makingChargeConversion">Making Charge</label>
+                    <input type="number" id="makingChargeConversion" placeholder="e.g., 500" step="0.01">
+                </div>
+            </div>
+
+            <div class="result" id="voriAnaRotiResult">
+                <strong>Conversion Result:</strong><br>
+                Vori: <strong id="displayResultVori">0</strong><br>
+                Ana: <strong id="displayResultAna">0</strong><br>
+                Roti: <strong id="displayResultRoti">0</strong><br>
+                Point: <strong id="displayResultPoint">0</strong><br>
+                Total Price: <strong id="displayResultTotalPrice">0.00 BDT</strong>
+            </div>
+
+            <label for="resultVori" style="display: none;">Vori</label>
+            <input type="text" id="resultVori" placeholder="Result in Vori" disabled style="display: none;">
+            <label for="resultAna" style="display: none;">Ana</label>
+            <input type="text" id="resultAna" placeholder="Result in Ana" disabled style="display: none;">
+            <label for="resultRoti" style="display: none;">Roti</label>
+            <input type="text" id="resultRoti" placeholder="Result in Roti" disabled style="display: none;">
+            <label for="resultPoint" style="display: none;">Point</label>
+            <input type="text" id="resultPoint" placeholder="Result in Point" disabled style="display: none;">
+            <label for="resultTotalPrice" style="display: none;">Total Price</label>
+            <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled style="display: none;">
         </div>
-        <div>
-            <label for="makingChargeConversion">Making Charge</label>
-            <input type="number" id="makingChargeConversion" placeholder="Making Charge">
+
+        <div class="converter">
+            <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
+
+            <div class="row">
+                <div>
+                    <label for="vori">Vori</label>
+                    <input type="number" id="vori" placeholder="Enter Vori">
+                </div>
+                <div>
+                    <label for="ana">Ana</label>
+                    <input type="number" max="15" min="0" id="ana" placeholder="Ana (0-15)">
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label for="roti">Roti</label>
+                    <input type="number" max="5" min="0" id="roti" placeholder="Roti (0-5)">
+                </div>
+                <div>
+                    <label for="point">Point</label>
+                    <input type="number" max="9" min="0" id="point" placeholder="Point (0-9)">
+                </div>
+            </div>
+
+            <label for="pricePerGram">Price per Gram</label>
+            <input type="number" id="pricePerGram" placeholder="Price per Gram (optional)" step="0.01">
+
+            <div class="result" id="gramResult">
+                Result in Gram: <strong id="displayResultGram">0.0000</strong><br>
+                Total Price: <strong id="displayTotalPrice">0.00 BDT</strong>
+            </div>
+
+            <label for="resultGram" style="display: none;">Result in Gram</label>
+            <input type="text" id="resultGram" placeholder="Result in Gram" disabled style="display: none;">
+            <label for="totalPrice" style="display: none;">Total Price</label>
+            <input type="text" id="totalPrice" placeholder="Total Price" disabled style="display: none;">
         </div>
+
+        <div class="converter">
+            <h2>Scrap Gold Price Calculator</h2>
+
+            <label for="voriPrice">24K Gold Price (Per Vori - BDT):</label>
+            <input type="number" id="voriPrice" value="155000" step="0.01">
+
+            <label for="unitType">Select Purity Measurement Type:</label>
+            <select id="unitTypeScrap" onchange="toggleUnitInput()">
+                <option value="carat">Carat</option>
+                <option value="ana">Ana</option>
+            </select>
+
+            <div id="caratInput">
+                <label for="carat">Carat (e.g. 22):</label>
+                <input type="number" step="0.01" id="carat" value="22">
+            </div>
+
+            <div id="anaInput" style="display:none">
+                <label for="anaScrap">Ana (e.g. 14.66):</label>
+                <input type="number" step="0.01" id="anaScrap" value="14.66">
+            </div>
+
+            <label for="weight">Gold Weight (grams):</label>
+            <input type="number" step="0.01" id="weight" value="11.93">
+
+            <div class="result" id="scrapResult">
+                <strong>Calculation Result:</strong><br>
+                Ana Equivalent: <strong id="displayAnaEquivalent">0.00 Ana</strong><br>
+                24K Gold Price per Gram: <strong id="displayPerGram24k">0.00 BDT</strong><br>
+                Price Based on Purity: <strong id="displayTotalAnaValue">0.00 BDT</strong><br>
+                Scrap Gold Price per Gram: <strong id="displayPerGramScrap">0.00 BDT</strong><br>
+                Total Scrap Gold Value: <strong id="displayFinalPrice">0.00 BDT</strong>
+            </div>
+        </div>
+
     </div>
-    
-    <button onclick="convertToVoriAnaRoti()">Convert</button>
-    
-    <label for="resultVori">Vori</label>
-    <input type="text" id="resultVori" placeholder="Result in Vori" disabled>
 
-    <label for="resultAna">Ana</label>
-    <input type="text" id="resultAna" placeholder="Result in Ana" disabled>
+    <script>
+        // --- Conversion Constants ---
+        const GRAMS_PER_VORI = 11.664;
+        const GRAMS_PER_ANA = 0.729; // 1/16 Vori
+        const GRAMS_PER_ROTI = 0.1215; // 1/6 Ana
+        const GRAMS_PER_POINT = 0.01215; // 1/10 Roti
 
-    <label for="resultRoti">Roti</label>
-    <input type="text" id="resultRoti" placeholder="Result in Roti" disabled>
+        // --- Gram to Vori, Ana, Roti, Point Conversion ---
+        function convertToVoriAnaRoti() {
+            let gram = parseFloat(document.getElementById('gram').value);
+            let pricePerGramConversion = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
+            let vatPercentageConversion = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
+            let makingChargeConversion = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
 
-    <label for="resultPoint">Point</label>
-    <input type="text" id="resultPoint" placeholder="Result in Point" disabled>
+            if (isNaN(gram) || gram < 0) {
+                document.getElementById('displayResultVori').textContent = 0;
+                document.getElementById('displayResultAna').textContent = 0;
+                document.getElementById('displayResultRoti').textContent = 0;
+                document.getElementById('displayResultPoint').textContent = 0;
+                document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
+                return;
+            }
 
-    <label for="resultTotalPrice">Total Price</label>
-    <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled>
-</div>
+            let vori = Math.floor(gram / GRAMS_PER_VORI);
+            let remainder = gram % GRAMS_PER_VORI;
+            let ana = Math.floor(remainder / GRAMS_PER_ANA);
+            remainder %= GRAMS_PER_ANA;
+            let roti = Math.floor(remainder / GRAMS_PER_ROTI);
+            remainder %= GRAMS_PER_ROTI;
+            let point = Math.round(remainder / GRAMS_PER_POINT);
 
-<div class="converter">
-    <h2>Vori, Ana, Roti, Point to Gram Converter</h2>
-    
-    <div class="row">
-        <div>
-            <label for="vori">Vori</label>
-            <input type="number" id="vori" placeholder="Vori">
-        </div>
-        <div>
-            <label for="ana">Ana</label>
-            <input type="number" max="15" min="0" id="ana" placeholder="Ana">
-        </div>
-    </div>
+            // Adjust for rounding pushing values up
+            if (point >= 10) {
+                roti++;
+                point -= 10;
+            }
+            if (roti >= 6) {
+                ana++;
+                roti -= 6;
+            }
+            if (ana >= 16) {
+                vori++;
+                ana -= 16;
+            }
 
-    <div class="row">
-        <div>
-            <label for="roti">Roti</label>
-            <input type="number" max="5" min="0" id="roti" placeholder="Roti">
-        </div>
-        <div>
-            <label for="point">Point</label>
-            <input type="number" max="9" min="0" id="point" placeholder="Point">
-        </div>
-    </div>
+            document.getElementById('displayResultVori').textContent = vori;
+            document.getElementById('displayResultAna').textContent = ana;
+            document.getElementById('displayResultRoti').textContent = roti;
+            document.getElementById('displayResultPoint').textContent = point;
 
-    <label for="pricePerGram">Price per Gram</label>
-    <input type="number" id="pricePerGram" placeholder="Price per Gram">
-    
-    <button onclick="convertToGram()">Convert</button>
-    
-    <label for="resultGram">Result in Gram</label>
-    <input type="text" id="resultGram" placeholder="Result in Gram" disabled>
+            let basePrice = gram * pricePerGramConversion;
+            let vatAmount = (basePrice * vatPercentageConversion) / 100;
+            let totalPrice = basePrice + vatAmount + makingChargeConversion;
 
-    <label for="totalPrice">Total Price</label>
-    <input type="text" id="totalPrice" placeholder="Total Price" disabled>
-</div>
-<script>
-    function convertToGram() {
-        let vori = parseFloat(document.getElementById('vori').value) || 0;
-        let ana = parseInt(document.getElementById('ana').value) || 0;
-        let roti = parseInt(document.getElementById('roti').value) || 0;
-        let point = parseInt(document.getElementById('point').value) || 0;
-        let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
-        
-        // Correct ID for VAT percentage and making charge from second converter
-        let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;  
-        let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
-
-        // Validate Ana, Roti, and Point inputs
-        if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
-        ana !== parseFloat(document.getElementById('ana').value) ||
-        roti !== parseFloat(document.getElementById('roti').value) ||
-        point !== parseFloat(document.getElementById('point').value)) {
-            alert("Please enter valid integer values within specified ranges for Ana, Roti, and Point. Accepted Range is Ana: 0-15, Roti: 0-5, point: 0-9");
-            return;
+            document.getElementById('displayResultTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
         }
 
-        // Calculate the weight in grams
-        let gram = vori * 11.6640 + ana * 0.7290 + roti * 0.1215 + point * 0.0122;
-        document.getElementById('resultGram').value = gram.toFixed(4);
+        // --- Vori, Ana, Roti, Point to Gram Conversion ---
+        function convertToGram() {
+            let vori = parseFloat(document.getElementById('vori').value) || 0;
+            let ana = parseInt(document.getElementById('ana').value) || 0;
+            let roti = parseInt(document.getElementById('roti').value) || 0;
+            let point = parseInt(document.getElementById('point').value) || 0;
 
-        // Calculate the base price
-        let basePrice = gram * pricePerGram;
-        
-        // Apply VAT
-        let vatAmount = (basePrice * vatPercentage) / 100;
-        
-        // Apply making charge
-        let totalPrice = basePrice + vatAmount + makingCharge;
+            let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
+            let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0; // From first converter
+            let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0; // From first converter
 
-        document.getElementById('totalPrice').value = totalPrice.toFixed(2);
-    }
+            // Validate Ana, Roti, and Point inputs
+            if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
+                (document.getElementById('ana').value !== '' && ana !== parseFloat(document.getElementById('ana').value)) ||
+                (document.getElementById('roti').value !== '' && roti !== parseFloat(document.getElementById('roti').value)) ||
+                (document.getElementById('point').value !== '' && point !== parseFloat(document.getElementById('point').value))) {
+                alert("Please enter valid integer values within specified ranges for Ana (0-15), Roti (0-5), and Point (0-9).");
+                return;
+            }
 
-    function convertToVoriAnaRoti() {
-        let gram = parseFloat(document.getElementById('gram').value);
-        let pricePerGramConversion = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;  // Use price per gram from first converter
-        
-        if (gram < 0 || isNaN(gram)) {
-            alert("Please enter a valid positive number for Gram.");
-            return;
+            let gram = (vori * GRAMS_PER_VORI) +
+                       (ana * GRAMS_PER_ANA) +
+                       (roti * GRAMS_PER_ROTI) +
+                       (point * GRAMS_PER_POINT);
+
+            document.getElementById('displayResultGram').textContent = gram.toFixed(4);
+
+            let basePrice = gram * pricePerGram;
+            let totalPrice = basePrice;
+            if (pricePerGram > 0 || vatPercentage > 0 || makingCharge > 0) {
+                let vatAmount = (basePrice * vatPercentage) / 100;
+                totalPrice = basePrice + vatAmount + makingCharge;
+            } else {
+                totalPrice = 0;
+            }
+
+            document.getElementById('displayTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
         }
 
-        // Conversion logic for Vori, Ana, Roti, and Point
-        let vori = Math.floor(gram / 11.6640);
-        let remainder = gram % 11.6640;
-        let ana = Math.floor(remainder / 0.7290);
-        remainder %= 0.7290;
-        let roti = Math.floor(remainder / 0.1215);
-        remainder %= 0.1215;
-        let point = Math.floor(remainder / 0.0122);
-        
-        // Output results
-        document.getElementById('resultVori').value = vori;
-        document.getElementById('resultAna').value = ana;
-        document.getElementById('resultRoti').value = roti;
-        document.getElementById('resultPoint').value = point;
+        // --- Scrap Gold Price Calculator Functions ---
+        function toggleUnitInput() {
+            const unitType = document.getElementById('unitTypeScrap').value; // Corrected ID
+            document.getElementById('caratInput').style.display = unitType === 'carat' ? 'block' : 'none';
+            // Use a unique ID for the ana input in the scrap calculator to avoid conflict
+            document.getElementById('anaInput').style.display = unitType === 'ana' ? 'block' : 'none';
+            calculateVangariPrice(); // Recalculate when unit type changes
+        }
 
-        // Calculate the total price based on the gram entered and price per gram
-        let basePrice = gram * pricePerGramConversion;
-        document.getElementById('resultTotalPrice').value = basePrice.toFixed(2);
-    }
-</script>
+        function calculateVangariPrice() {
+            const voriPrice = parseFloat(document.getElementById('voriPrice').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const unitType = document.getElementById('unitTypeScrap').value; // Corrected ID
 
-<button onclick="showGoldPrices()">Show Live Gold Prices</button>
-<div id="goldPricesPopup" style="display:none;">
-    <h3>Live Gold Prices</h3>
-    <p id="price22k"></p>
-    <p id="price21k"></p>
-    <p id="price18k"></p>
-    <p id="priceSan"></p>
-</div>
+            let anaValue = 0;
+            if (unitType === 'carat') {
+                const carat = parseFloat(document.getElementById('carat').value) || 0;
+                anaValue = (carat / 24) * 16;
+            } else {
+                // Use the correct ID for ana input in the scrap calculator
+                anaValue = parseFloat(document.getElementById('anaScrap').value) || 0;
+            }
 
-<script>
-    async function showGoldPrices() {
-        const res = await fetch('/api/gold-prices');
-        const data = await res.json();
-        document.getElementById('price22k').innerText = `22K: ${data["22K"]}`;
-        document.getElementById('price21k').innerText = `21K: ${data["21K"]}`;
-        document.getElementById('price18k').innerText = `18K: ${data["18K"]}`;
-        document.getElementById('priceSan').innerText = `SAN: ${data["SAN"]}`;
-        document.getElementById('goldPricesPopup').style.display = 'block';
-    }
-</script>
+            // Calculations
+            const perGram24k = voriPrice / GRAMS_PER_VORI; // 24K price per gram
+            const perGramScrapPurityAdjusted = perGram24k * (anaValue / 16); // Price per gram adjusted for purity (ana equivalent)
+            const finalPrice = perGramScrapPurityAdjusted * weight;
 
+            // Display results
+            document.getElementById('displayAnaEquivalent').textContent = `${anaValue.toFixed(2)} Ana`;
+            document.getElementById('displayPerGram24k').textContent = `${perGram24k.toFixed(2)} BDT`;
+            // The "Price Based on Purity" from original HTML was a bit ambiguous without context.
+            // I'm assuming it meant the 24K price per gram * the fraction of 24K represented by 'anaValue'.
+            document.getElementById('displayTotalAnaValue').textContent = `${(perGram24k * anaValue / 16).toFixed(2)} BDT`;
+            document.getElementById('displayPerGramScrap').textContent = `${perGramScrapPurityAdjusted.toFixed(2)} BDT`;
+            document.getElementById('displayFinalPrice').textContent = `${finalPrice.toFixed(2)} BDT`;
+        }
 
+        // --- Event Listeners for Real-time Updates ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial call to set up the scrap calculator's unit display and initial calculation
+            toggleUnitInput();
+            calculateVangariPrice(); // Run initial calculation for the new calculator
+
+            // Gram to Vori converter
+            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti);
+            document.getElementById('pricePerGramConversion').addEventListener('input', convertToVoriAnaRoti);
+            document.getElementById('vatPercentageConversion').addEventListener('input', convertToVoriAnaRoti);
+            document.getElementById('makingChargeConversion').addEventListener('input', convertToVoriAnaRoti);
+
+            // Vori to Gram converter
+            document.getElementById('vori').addEventListener('input', convertToGram);
+            document.getElementById('ana').addEventListener('input', convertToGram);
+            document.getElementById('roti').addEventListener('input', convertToGram);
+            document.getElementById('point').addEventListener('input', convertToGram);
+            document.getElementById('pricePerGram').addEventListener('input', convertToGram);
+
+            // Scrap Gold Price Calculator inputs
+            document.getElementById('voriPrice').addEventListener('input', calculateVangariPrice);
+            document.getElementById('unitTypeScrap').addEventListener('change', toggleUnitInput); // Call toggleUnitInput on change
+            document.getElementById('carat').addEventListener('input', calculateVangariPrice);
+            // Changed ID to anaScrap to avoid conflict with ana in Vori to Gram converter
+            document.getElementById('anaScrap').addEventListener('input', calculateVangariPrice);
+            document.getElementById('weight').addEventListener('input', calculateVangariPrice);
+        });
+    </script>
 </body>
 </html>
