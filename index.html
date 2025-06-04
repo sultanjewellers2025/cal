@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Weight & Price Converter</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="manifest" href="/manifest.json">
     <style>
         :root {
             --primary-color: #007bff; /* A nice blue for buttons/accents */
@@ -185,87 +186,109 @@
             }
         }
         
-
-
+/* --- Sticky Author Pop-up Styles --- */
 .author-popup {
     /* Positioning */
     position: fixed;
-    bottom: 12px; /* Very close to the bottom */
-    right: 12px;  /* Very close to the right */
-    z-index: 1000; /* Stays on top */
+    bottom: 15px; /* Slightly closer to the bottom */
+    right: 15px;  /* Slightly closer to the right */
+    z-index: 1000; /* Ensures it stays on top of other content */
 
     /* Sizing & Shape */
-    padding: 8px 15px; /* Minimal padding */
-    border-radius: 6px; /* Slightly less rounded for sharpness */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Very subtle shadow */
-    border: 1px solid rgba(220, 220, 220, 0.7); /* Faint, light border */
+    padding: 12px 18px; /* Reduced padding for compact size */
+    border-radius: 8px; /* Moderately rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Softer shadow */
+    border: 2px solid rgb(220, 220, 220); /* Thicker border (will be animated) */
 
     /* Colors & Typography */
-    background: rgba(255, 255, 255, 0.95); /* Near opaque white background */
-    color: #666; /* Soft grey text */
-    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; /* Modern sans-serif font */
-    font-size: 12px; /* Very small font size */
-    text-align: right; /* Align text to the right for concise look */
-    line-height: 1.2; /* Tight line height */
+    background: rgba(255, 255, 255, 0.9); /* Soft white background with slight transparency */
+    color: #555; /* Darker gray text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Clean, readable font */
+    font-size: 13px; /* Smaller font size */
+    text-align: left; /* Align text to the left for better readability */
+    line-height: 1.3; /* Compact line spacing */
 
-    /* Entrance Animation */
+    /* Initial state for animations */
     opacity: 0;
-    transform: translateY(10px); /* Starts slightly below */
-    animation: fadeInSlideUp 0.4s forwards ease-out; /* Quick and smooth animation */
-    animation-delay: 1.5s; /* Appears after a brief delay */
+    transform: translateX(30px); /* Starts slightly to the right for slide-in effect */
+
+    /* Combined Animations: Entrance and RGB Border Pulse */
+    animation: subtleSlideIn 0.6s forwards ease-out, /* Pop-up slides in */
+               rgbBorderPulse 3s infinite linear forwards; /* Border color cycles */
+    animation-delay: 0.8s, 0.8s; /* Both animations start after 0.8 seconds */
 }
 
-/* Link Styling */
+/* Link Styling within the Pop-up */
 .author-popup a {
-    color: #4A90E2; /* Clean, vibrant blue link color */
+    color: #008CBA; /* Elegant blue link color */
     text-decoration: none; /* No underline by default */
-    font-weight: 500; /* Medium font weight */
-    transition: color 0.2s ease-out; /* Fast transition for hover */
+    font-weight: 600; /* Semi-bold link */
+    transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out; /* Smooth transition for hover effects */
 }
 
+/* Link Hover Styling */
 .author-popup a:hover {
-    color: #2F6FD4; /* Slightly darker blue on hover */
-    text-decoration: underline; /* Underline on hover */
+    color: #005473; /* Darker blue on hover */
+    text-decoration: underline; /* Underline appears on hover */
 }
 
-/* Author Name Styling */
+/* Author Name Styling within the Pop-up */
 .author-popup strong {
-    font-size: 13px; /* Slightly larger for emphasis */
-    font-weight: 600; /* Semi-bold */
-    display: inline; /* Keeps it inline with "Developed by" */
-    margin-left: 3px; /* Small space after "Developed by" */
+    display: inline; /* Keeps the name on the same line as "Developed by" */
+    font-size: 14px; /* Slightly larger font size for emphasis */
+    font-weight: 700; /* Bolder font weight */
+    margin-left: 5px; /* Small space after "Developed by" */
 }
 
-/* Paragraph margin reset for compactness */
+/* Paragraph Margin Reset for Compactness */
 .author-popup p {
-    margin: 0;
+    margin: 0; /* Removes default paragraph margin */
     padding: 0;
 }
 
-/* Keyframe for the entrance animation */
-@keyframes fadeInSlideUp {
+/* --- Keyframe Animations --- */
+
+/* Keyframes for the Pop-up Entrance Animation */
+@keyframes subtleSlideIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateX(30px); /* Starts hidden and to the right */
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0); /* Ends visible at its position */
     }
 }
 
-/* Media query for very small screens (phones in portrait) */
-@media (max-width: 400px) {
-    .author-popup {
-        bottom: 8px;
-        right: 8px;
-        padding: 6px 12px;
-        font-size: 11px;
+/* Keyframes for the RGB Border Color Animation */
+@keyframes rgbBorderPulse {
+    0% {
+        border-color: rgb(255, 0, 0);   /* Red */
     }
-    .author-popup strong {
-        font-size: 12px;
+    33% {
+        border-color: rgb(0, 255, 0);   /* Green */
+    }
+    66% {
+        border-color: rgb(0, 0, 255);   /* Blue */
+    }
+    100% {
+        border-color: rgb(255, 0, 0);   /* Cycles back to Red for a smooth loop */
     }
 }
+
+/* --- Responsive Adjustments for Pop-up --- */
+@media (max-width: 480px) {
+    .author-popup {
+        bottom: 10px; /* Closer to bottom on small screens */
+        right: 10px;  /* Closer to right on small screens */
+        padding: 8px 12px; /* Smaller padding */
+        font-size: 11px; /* Smaller base font size */
+    }
+    .author-popup strong {
+        font-size: 12px; /* Smaller name font size */
+    }
+}
+
 
     </style>
 </head>
@@ -389,7 +412,24 @@
         </div>
 
     </div>
+<script>
+    // Register the Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        });
+    }
 
+    // Your existing JavaScript for conversions goes here
+    // (Make sure it's outside the Service Worker registration block if it was previously outside)
+    // ... (all your existing JS code for convertToVoriAnaRoti, convertToGram, calculateVangariPrice, event listeners) ...
+</script>
     <script>
         // --- Conversion Constants ---
         const GRAMS_PER_VORI = 11.664;
