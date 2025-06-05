@@ -215,7 +215,7 @@
 
     /* Combined Animations: Entrance and RGB Border Pulse */
     animation: subtleSlideIn 0.6s forwards ease-out, /* Pop-up slides in */
-               rgbBorderPulse 3s infinite linear forwards; /* Border color cycles */
+                rgbBorderPulse 3s infinite linear forwards; /* Border color cycles */
     animation-delay: 0.8s, 0.8s; /* Both animations start after 0.8 seconds */
 }
 
@@ -302,7 +302,7 @@
         <div class="converter">
             <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
             <label for="gram">Input Gram</label>
-            <input type="number" id="gram" placeholder="Enter Grams" step="0.0001">
+            <input type="text" id="gram" placeholder="Enter Grams (e.g., 10.5 or 5+2.5+3)" step="0.0001">
             <label for="pricePerGramConversion">Price per Gram</label>
             <input type="number" id="pricePerGramConversion" placeholder="Price per Gram" step="0.01">
 
@@ -383,7 +383,7 @@
             <label for="voriPrice">24K Gold Price (Per Vori - BDT):</label>
             <input type="number" id="voriPrice" value="155000" step="0.01">
 
-            <label for="unitType">Select Purity Measurement Type:</label>
+            <label for="unitTypeScrap">Select Purity Measurement Type:</label>
             <select id="unitTypeScrap" onchange="toggleUnitInput()">
                 <option value="carat">Carat</option>
                 <option value="ana">Ana</option>
@@ -440,12 +440,33 @@
 
         // --- Gram to Vori, Ana, Roti, Point Conversion ---
         function convertToVoriAnaRoti() {
-            let gram = parseFloat(document.getElementById('gram').value);
+            let gramInputString = document.getElementById('gram').value;
             let pricePerGramConversion = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
             let vatPercentageConversion = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
             let makingChargeConversion = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
 
-            if (isNaN(gram) || gram < 0) {
+            let totalGram = 0;
+            if (gramInputString) {
+                const parts = gramInputString.split('+');
+                let allPartsValid = true;
+                for (const part of parts) {
+                    const parsedPart = parseFloat(part.trim());
+                    if (isNaN(parsedPart)) {
+                        allPartsValid = false;
+                        break;
+                    }
+                    totalGram += parsedPart;
+                }
+
+                if (!allPartsValid || totalGram < 0) {
+                    document.getElementById('displayResultVori').textContent = 0;
+                    document.getElementById('displayResultAna').textContent = 0;
+                    document.getElementById('displayResultRoti').textContent = 0;
+                    document.getElementById('displayResultPoint').textContent = 0;
+                    document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
+                    return;
+                }
+            } else {
                 document.getElementById('displayResultVori').textContent = 0;
                 document.getElementById('displayResultAna').textContent = 0;
                 document.getElementById('displayResultRoti').textContent = 0;
@@ -454,8 +475,9 @@
                 return;
             }
 
-            let vori = Math.floor(gram / GRAMS_PER_VORI);
-            let remainder = gram % GRAMS_PER_VORI;
+
+            let vori = Math.floor(totalGram / GRAMS_PER_VORI);
+            let remainder = totalGram % GRAMS_PER_VORI;
             let ana = Math.floor(remainder / GRAMS_PER_ANA);
             remainder %= GRAMS_PER_ANA;
             let roti = Math.floor(remainder / GRAMS_PER_ROTI);
@@ -481,7 +503,7 @@
             document.getElementById('displayResultRoti').textContent = roti;
             document.getElementById('displayResultPoint').textContent = point;
 
-            let basePrice = gram * pricePerGramConversion;
+            let basePrice = totalGram * pricePerGramConversion;
             let vatAmount = (basePrice * vatPercentageConversion) / 100;
             let totalPrice = basePrice + vatAmount + makingChargeConversion;
 
@@ -509,9 +531,9 @@
             }
 
             let gram = (vori * GRAMS_PER_VORI) +
-                       (ana * GRAMS_PER_ANA) +
-                       (roti * GRAMS_PER_ROTI) +
-                       (point * GRAMS_PER_POINT);
+                        (ana * GRAMS_PER_ANA) +
+                        (roti * GRAMS_PER_ROTI) +
+                        (point * GRAMS_PER_POINT);
 
             document.getElementById('displayResultGram').textContent = gram.toFixed(4);
 
@@ -572,7 +594,8 @@
             calculateVangariPrice(); // Run initial calculation for the new calculator
 
             // Gram to Vori converter
-            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti);
+            // Changed input type to 'text' and removed 'step' attribute from HTML for flexibility
+            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti); 
             document.getElementById('pricePerGramConversion').addEventListener('input', convertToVoriAnaRoti);
             document.getElementById('vatPercentageConversion').addEventListener('input', convertToVoriAnaRoti);
             document.getElementById('makingChargeConversion').addEventListener('input', convertToVoriAnaRoti);
