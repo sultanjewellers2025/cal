@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gold Cal By SSS</title>
-	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <title>Cal By SSS</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <style>
         :root {
             --primary-color: #007bff; /* A nice blue for buttons/accents */
@@ -93,29 +93,6 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle focus ring */
             outline: none;
         }
-
-        /* Removed button styles as buttons are removed from other sections */
-        /*
-        button {
-            width: 100%;
-            padding: 14px;
-            font-size: 18px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover-color);
-            transform: translateY(-2px);
-        }
-        */
 
         .row {
             display: flex;
@@ -290,7 +267,6 @@
     }
 }
 
-
     </style>
 </head>
 
@@ -301,8 +277,8 @@
     <div class="main-container">
         <div class="converter">
             <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
-            <label for="gram">Input Gram</label>
-            <input type="text" id="gram" placeholder="Enter Grams (e.g., 10.5 or 5+2.5+3)" step="0.0001">
+            <label for="gram">Input Gram (e.g., 10.5 or 5+2.5+3)</label>
+            <input type="text" id="gram" placeholder="Enter Grams">
             <label for="pricePerGramConversion">Price per Gram</label>
             <input type="number" id="pricePerGramConversion" placeholder="Price per Gram" step="0.01">
 
@@ -323,6 +299,7 @@
                 Ana: <strong id="displayResultAna">0</strong><br>
                 Roti: <strong id="displayResultRoti">0</strong><br>
                 Point: <strong id="displayResultPoint">0</strong><br>
+                Total Weight (Roti Equivalent): <strong id="displayTotalWeightRoti">0.00</strong><br>
                 Total Price: <strong id="displayResultTotalPrice">0.00 BDT</strong>
             </div>
 
@@ -334,6 +311,8 @@
             <input type="text" id="resultRoti" placeholder="Result in Roti" disabled style="display: none;">
             <label for="resultPoint" style="display: none;">Point</label>
             <input type="text" id="resultPoint" placeholder="Result in Point" disabled style="display: none;">
+            <label for="totalWeightRoti" style="display: none;">Total Weight (Roti Equivalent)</label>
+            <input type="text" id="totalWeightRoti" placeholder="Result in Total Weight (Roti Equivalent)" disabled style="display: none;">
             <label for="resultTotalPrice" style="display: none;">Total Price</label>
             <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled style="display: none;">
         </div>
@@ -426,10 +405,6 @@
                 });
         });
     }
-
-    // Your existing JavaScript for conversions goes here
-    // (Make sure it's outside the Service Worker registration block if it was previously outside)
-    // ... (all your existing JS code for convertToVoriAnaRoti, convertToGram, calculateVangariPrice, event listeners) ...
 </script>
     <script>
         // --- Conversion Constants ---
@@ -463,6 +438,7 @@
                     document.getElementById('displayResultAna').textContent = 0;
                     document.getElementById('displayResultRoti').textContent = 0;
                     document.getElementById('displayResultPoint').textContent = 0;
+                    document.getElementById('displayTotalWeightRoti').textContent = '0.00'; // Reset Total Weight
                     document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
                     return;
                 }
@@ -471,37 +447,35 @@
                 document.getElementById('displayResultAna').textContent = 0;
                 document.getElementById('displayResultRoti').textContent = 0;
                 document.getElementById('displayResultPoint').textContent = 0;
+                document.getElementById('displayTotalWeightRoti').textContent = '0.00'; // Reset Total Weight
                 document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
                 return;
             }
 
+            // Convert total grams to the smallest unit (points) for precise breakdown
+            let totalPointsFloat = totalGram / GRAMS_PER_POINT;
 
-            let vori = Math.floor(totalGram / GRAMS_PER_VORI);
-            let remainder = totalGram % GRAMS_PER_VORI;
-            let ana = Math.floor(remainder / GRAMS_PER_ANA);
-            remainder %= GRAMS_PER_ANA;
-            let roti = Math.floor(remainder / GRAMS_PER_ROTI);
-            remainder %= GRAMS_PER_ROTI;
-            let point = Math.round(remainder / GRAMS_PER_POINT);
+            // Use Math.floor to truncate the decimal part, aligning with the example
+            // 955.555... points should yield 955 points for breakdown.
+            let roundedTotalPoints = Math.floor(totalPointsFloat);
 
-            // Adjust for rounding pushing values up
-            if (point >= 10) {
-                roti++;
-                point -= 10;
-            }
-            if (roti >= 6) {
-                ana++;
-                roti -= 6;
-            }
-            if (ana >= 16) {
-                vori++;
-                ana -= 16;
-            }
+            let vori = Math.floor(roundedTotalPoints / 960); // 1 Vori = 16 Ana = 96 Roti = 960 Points
+            let remainingPoints = roundedTotalPoints % 960;
+
+            let ana = Math.floor(remainingPoints / 60); // 1 Ana = 6 Roti = 60 Points
+            remainingPoints %= 60;
+
+            let roti = Math.floor(remainingPoints / 10); // 1 Roti = 10 Points
+            let point = remainingPoints % 10;
 
             document.getElementById('displayResultVori').textContent = vori;
             document.getElementById('displayResultAna').textContent = ana;
             document.getElementById('displayResultRoti').textContent = roti;
             document.getElementById('displayResultPoint').textContent = point;
+            
+            // Calculate and display Total Weight (Roti Equivalent)
+            const totalWeightRoti = totalGram / GRAMS_PER_ROTI;
+            document.getElementById('displayTotalWeightRoti').textContent = totalWeightRoti.toFixed(2);
 
             let basePrice = totalGram * pricePerGramConversion;
             let vatAmount = (basePrice * vatPercentageConversion) / 100;
@@ -551,9 +525,8 @@
 
         // --- Scrap Gold Price Calculator Functions ---
         function toggleUnitInput() {
-            const unitType = document.getElementById('unitTypeScrap').value; // Corrected ID
+            const unitType = document.getElementById('unitTypeScrap').value;
             document.getElementById('caratInput').style.display = unitType === 'carat' ? 'block' : 'none';
-            // Use a unique ID for the ana input in the scrap calculator to avoid conflict
             document.getElementById('anaInput').style.display = unitType === 'ana' ? 'block' : 'none';
             calculateVangariPrice(); // Recalculate when unit type changes
         }
@@ -561,14 +534,13 @@
         function calculateVangariPrice() {
             const voriPrice = parseFloat(document.getElementById('voriPrice').value) || 0;
             const weight = parseFloat(document.getElementById('weight').value) || 0;
-            const unitType = document.getElementById('unitTypeScrap').value; // Corrected ID
+            const unitType = document.getElementById('unitTypeScrap').value;
 
             let anaValue = 0;
             if (unitType === 'carat') {
                 const carat = parseFloat(document.getElementById('carat').value) || 0;
                 anaValue = (carat / 24) * 16;
             } else {
-                // Use the correct ID for ana input in the scrap calculator
                 anaValue = parseFloat(document.getElementById('anaScrap').value) || 0;
             }
 
@@ -580,8 +552,6 @@
             // Display results
             document.getElementById('displayAnaEquivalent').textContent = `${anaValue.toFixed(2)} Ana`;
             document.getElementById('displayPerGram24k').textContent = `${perGram24k.toFixed(2)} BDT`;
-            // The "Price Based on Purity" from original HTML was a bit ambiguous without context.
-            // I'm assuming it meant the 24K price per gram * the fraction of 24K represented by 'anaValue'.
             document.getElementById('displayTotalAnaValue').textContent = `${(perGram24k * anaValue / 16).toFixed(2)} BDT`;
             document.getElementById('displayPerGramScrap').textContent = `${perGramScrapPurityAdjusted.toFixed(2)} BDT`;
             document.getElementById('displayFinalPrice').textContent = `${finalPrice.toFixed(2)} BDT`;
@@ -594,8 +564,7 @@
             calculateVangariPrice(); // Run initial calculation for the new calculator
 
             // Gram to Vori converter
-            // Changed input type to 'text' and removed 'step' attribute from HTML for flexibility
-            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti); 
+            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti);
             document.getElementById('pricePerGramConversion').addEventListener('input', convertToVoriAnaRoti);
             document.getElementById('vatPercentageConversion').addEventListener('input', convertToVoriAnaRoti);
             document.getElementById('makingChargeConversion').addEventListener('input', convertToVoriAnaRoti);
@@ -609,9 +578,8 @@
 
             // Scrap Gold Price Calculator inputs
             document.getElementById('voriPrice').addEventListener('input', calculateVangariPrice);
-            document.getElementById('unitTypeScrap').addEventListener('change', toggleUnitInput); // Call toggleUnitInput on change
+            document.getElementById('unitTypeScrap').addEventListener('change', toggleUnitInput);
             document.getElementById('carat').addEventListener('input', calculateVangariPrice);
-            // Changed ID to anaScrap to avoid conflict with ana in Vori to Gram converter
             document.getElementById('anaScrap').addEventListener('input', calculateVangariPrice);
             document.getElementById('weight').addEventListener('input', calculateVangariPrice);
         });
