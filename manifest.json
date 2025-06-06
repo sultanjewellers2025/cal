@@ -1,6 +1,6 @@
 {
-    "name": "Gold Weight & Price Converter",
-    "short_name": "GoldCalc",
+    "name": "Cal by SSS",
+    "short_name": "GoldCalcSSS",
     "description": "Your ultimate tool for converting gold weights and calculating prices.",
     "start_url": "/",
     "display": "standalone",
