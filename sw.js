@@ -60,7 +60,69 @@ self.addEventListener('message', (event) => {
         // }, 10000); // 10 সেকেন্ড পর
     }
 });
+// --- Fetch Event ---
+// This event intercepts network requests made by the page.
+// It defines how the service worker responds to these requests (e.g., serving from cache).
+self.addEventListener('fetch', (event) => {
+    // Only handle HTTP/HTTPS requests, not chrome-extension:// etc.
+    if (event.request.url.startsWith('http')) {
+        event.respondWith(
+            caches.match(event.request)
+                .then((response) => {
+                    // If the request is in the cache, return the cached response
+                    if (response) {
+                        return response;
+                    }
 
+                    // Otherwise, try to fetch from the network
+                    const fetchRequest = event.request.clone(); // Clone request because it's a stream
+
+                    return fetch(fetchRequest)
+                        .then((response) => {
+                            // Check if we received a valid response (e.g., status 200, not opaque response for cross-origin)
+                            if (!response || response.status !== 200 || response.type !== 'basic') {
+                                return response;
+                            }
+
+                            const responseToCache = response.clone(); // Clone response for caching
+
+                            caches.open(CACHE_NAME)
+                                .then((cache) => {
+                                    cache.put(event.request, responseToCache); // Cache the new response
+                                });
+
+                            return response; // Return the network response
+                        })
+                        .catch((error) => {
+                            // This catch handles network errors, not HTTP errors
+                            console.error('Service Worker: Fetch failed:', error);
+                            // You could return a fallback page here for offline network errors
+                            // return caches.match('/offline.html');
+                        });
+                })
+        );
+    }
+});
+
+// --- Activate Event ---
+// This event fires when the service worker becomes active.
+// It's typically used to clean up old caches.
+self.addEventListener('activate', (event) => {
+    const cacheWhitelist = [CACHE_NAME]; // Only keep the current cache version
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        // Delete old caches
+                        console.log('Service Worker: Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+});
 // --- Fetch Event (কন্ডিশনাল ক্যাশিং কৌশল) ---
 self.addEventListener('fetch', (event) => {
     if (event.request.url.startsWith('http')) {
