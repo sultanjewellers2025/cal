@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gold-converter-cache-v2'; // <--- এই লাইনটি পরিবর্তন করা হয়েছে!
+const CACHE_NAME = 'gold-converter-cache-v3'; // <--- নতুন সংস্করণ, এটি পরিবর্তন করতে ভুলবেন না!
 const urlsToCache = [
     '/',
     '/index.html',
@@ -7,12 +7,11 @@ const urlsToCache = [
     // আপনার কাস্টম আইকনগুলির পাথ এখানে যোগ করুন
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
-    '/icons/icon-maskable-512x512.png'
+    '/icons/icon-maskable-512x512.png',
+    '/offline.html' // অফলাইন পেজ ক্যাশেতে যোগ করা হয়েছে
 ];
 
 // --- Install Event ---
-// এই ইভেন্টটি সার্ভিস ওয়ার্কার প্রথমবার ইন্সটল হলে ফায়ার হয়।
-// এটি সাধারণত প্রয়োজনীয় অ্যাসেটগুলো আগে থেকে ক্যাশে করার জন্য ব্যবহৃত হয়।
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -26,46 +25,61 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// --- Fetch Event (Stale-While-Revalidate Strategy) ---
-// এই ইভেন্টটি পেজ দ্বারা করা নেটওয়ার্ক রিকোয়েস্টগুলোকে ইন্টারসেপ্ট করে।
-// এটি ডিফাইন করে যে সার্ভিস ওয়ার্কার কীভাবে এই রিকোয়েস্টগুলোর জবাব দেবে (যেমন, ক্যাশে থেকে সার্ভ করা)।
+// --- Fetch Event (কন্ডিশনাল ক্যাশিং কৌশল) ---
 self.addEventListener('fetch', (event) => {
-    // শুধুমাত্র HTTP/HTTPS রিকোয়েস্টগুলো হ্যান্ডেল করুন, chrome-extension:// ইত্যাদি নয়।
+    // শুধুমাত্র HTTP/HTTPS রিকোয়েস্টগুলো হ্যান্ডেল করুন
     if (event.request.url.startsWith('http')) {
         event.respondWith(
             caches.match(event.request).then((cachedResponse) => {
-                // নেটওয়ার্ক থেকে একটি নতুন রেসপন্স আনার প্রমিস তৈরি করুন।
-                const fetchPromise = fetch(event.request)
-                    .then((networkResponse) => {
-                        // আমরা একটি বৈধ নেটওয়ার্ক রেসপন্স পেয়েছি কিনা তা পরীক্ষা করুন।
-                        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                            // ক্যাশে করার জন্য রেসপন্সটি ক্লোন করুন।
-                            const responseToCache = networkResponse.clone();
-                            caches.open(CACHE_NAME)
-                                .then((cache) => {
-                                    cache.put(event.request, responseToCache); // নতুন রেসপন্সটি ক্যাশে করুন
-                                });
-                        }
-                        return networkResponse; // নেটওয়ার্ক রেসপন্সটি রিটার্ন করুন
-                    })
-                    .catch((error) => {
-                        console.warn('Service Worker: Fetch failed for', event.request.url, error);
-                        // যদি নেটওয়ার্ক ব্যর্থ হয়, এবং কোনো ক্যাশে করা রেসপন্সও না থাকে,
-                        // আপনি এখানে একটি ফলব্যাক পেজ (যেমন /offline.html) রিটার্ন করতে পারেন।
-                        // return caches.match('/offline.html');
-                    });
+                // ইন্টারনেট সংযোগ আছে কিনা তা পরীক্ষা করুন
+                // navigator.onLine ব্রাউজারকে জানায় ডিভাইস একটি নেটওয়ার্কের সাথে সংযুক্ত কিনা।
+                // এটি সম্পূর্ণ ইন্টারনেট অ্যাক্সেসের গ্যারান্টি দেয় না, তবে এটি একটি ভালো প্রথম চেক।
+                if (navigator.onLine) {
+                    // --- ইন্টারনেট থাকলে: Stale-While-Revalidate Strategy ---
+                    console.log('Service Worker: Online, applying Stale-While-Revalidate Strategy for:', event.request.url);
 
-                // যদি ক্যাশে করা রেসপন্স পাওয়া যায়, তাহলে তাৎক্ষণিকভাবে সেটি রিটার্ন করুন।
-                // অন্যথায়, নেটওয়ার্ক রেসপন্সের জন্য অপেক্ষা করুন।
-                return cachedResponse || fetchPromise;
+                    const fetchPromise = fetch(event.request)
+                        .then((networkResponse) => {
+                            // যদি বৈধ নেটওয়ার্ক রেসপন্স আসে, তবে ক্যাশে আপডেট করুন
+                            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                                caches.open(CACHE_NAME).then((cache) => {
+                                    cache.put(event.request, networkResponse.clone()); // নতুন রেসপন্সটি ক্যাশে করুন
+                                });
+                            }
+                            return networkResponse; // নেটওয়ার্ক রেসপন্সটি রিটার্ন করুন
+                        })
+                        .catch((error) => {
+                            console.warn('Service Worker: Network fetch failed (online):', event.request.url, error);
+                            // নেটওয়ার্ক ব্যর্থ হলেও যদি ক্যাশেতে থাকে, সেটি ব্যবহার করা হবে
+                            // না হলে, যদি request টি urlsToCache এর অংশ হয়, তাহলে ক্যাশে থেকে পাবে,
+                            // অন্যথায়, যদি offline.html ক্যাশেতে থাকে, সেটি রিটার্ন করবে।
+                            if (cachedResponse) { // যদি ক্যাশেতে কোনো পুরোনো রেসপন্স থাকে, সেটাই দেখান
+                                return cachedResponse;
+                            }
+                            return caches.match('/offline.html'); // যদি ক্যাশেতেও না থাকে, অফলাইন পেজ দেখান
+                        });
+
+                    // ক্যাশে থেকে দ্রুত রেসপন্স রিটার্ন করুন (যদি থাকে), অন্যথায় নেটওয়ার্ক রেসপন্সের জন্য অপেক্ষা করুন
+                    return cachedResponse || fetchPromise;
+
+                } else {
+                    // --- ইন্টারনেট না থাকলে (অফলাইন): Cache-First Strategy (সাধারণ অফলাইন মোড) ---
+                    console.log('Service Worker: Offline, applying Cache-First Strategy for:', event.request.url);
+
+                    // ক্যাশে থেকে রেসপন্স রিটার্ন করুন
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    } else {
+                        // যদি ক্যাশেতেও না থাকে (সম্পূর্ণ অফলাইন), তাহলে অফলাইন পেজ দেখান
+                        return caches.match('/offline.html');
+                    }
+                }
             })
         );
     }
 });
 
 // --- Activate Event ---
-// এই ইভেন্টটি সার্ভিস ওয়ার্কার সক্রিয় হলে ফায়ার হয়।
-// এটি সাধারণত পুরানো ক্যাশে পরিষ্কার করার জন্য ব্যবহৃত হয়।
 self.addEventListener('activate', (event) => {
     const cacheWhitelist = [CACHE_NAME]; // শুধুমাত্র বর্তমান ক্যাশে সংস্করণটি রাখুন
     event.waitUntil(
