@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cal By SSS</title>
+    <title>Gold Cal By SSS</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="/manifest.json">
@@ -267,6 +267,31 @@
     }
 }
 
+/* --- Refresh Button Styles --- */
+#refreshCache {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%; /* Make it circular */
+    width: 45px; /* Size of the button */
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px; /* Size of the icon */
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    z-index: 1001; /* Above other fixed elements */
+}
+
+#refreshCache:hover {
+    background-color: var(--primary-hover-color);
+    transform: rotate(30deg); /* Subtle rotation on hover */
+}
     </style>
 </head>
 
@@ -274,7 +299,7 @@
 <div class="author-popup">
     <p>Developed by <br> <a href="https://shatabdi.bio.link/" target="_blank" rel="noopener noreferrer"><strong>SSS</strong></a></p>
 </div>
-    <div class="main-container">
+<button id="refreshCache" title="Refresh data (Stale-While-Revalidate)">&#x21BB;</button> <div class="main-container">
         <div class="converter">
             <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
             <label for="gram">Input Gram (e.g., 10.5 or 5+2.5+3)</label>
@@ -299,7 +324,7 @@
                 Ana: <strong id="displayResultAna">0</strong><br>
                 Roti: <strong id="displayResultRoti">0</strong><br>
                 Point: <strong id="displayResultPoint">0</strong><br>
-                Total Weight: <strong id="displayTotalWeightRoti">0.00</strong><br>
+                Total Weight (Roti Equivalent): <strong id="displayTotalWeightRoti">0.00</strong><br>
                 Total Price: <strong id="displayResultTotalPrice">0.00 BDT</strong>
             </div>
 
@@ -311,8 +336,8 @@
             <input type="text" id="resultRoti" placeholder="Result in Roti" disabled style="display: none;">
             <label for="resultPoint" style="display: none;">Point</label>
             <input type="text" id="resultPoint" placeholder="Result in Point" disabled style="display: none;">
-            <label for="totalWeightRoti" style="display: none;">Total Weight </label>
-            <input type="text" id="totalWeightRoti" placeholder="Result in Total Weight " disabled style="display: none;">
+            <label for="totalWeightRoti" style="display: none;">Total Weight (Roti Equivalent)</label>
+            <input type="text" id="totalWeightRoti" placeholder="Result in Total Weight (Roti Equivalent)" disabled style="display: none;">
             <label for="resultTotalPrice" style="display: none;">Total Price</label>
             <input type="text" id="resultTotalPrice" placeholder="Total Price" disabled style="display: none;">
         </div>
@@ -393,7 +418,7 @@
 
     </div>
 <script>
-    // Register the Service Worker
+    // Service Worker রেজিস্ট্রেশন
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
@@ -405,6 +430,20 @@
                 });
         });
     }
+
+    // Refresh Button Logic
+    document.getElementById('refreshCache').addEventListener('click', () => {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            console.log('Sending refresh message to Service Worker...');
+            // Service Worker-কে রিফ্রেশ করার জন্য একটি মেসেজ পাঠান
+            navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_CACHE' });
+            // মেসেজ পাঠানোর পর পেজটি রিফ্রেশ করুন যাতে নতুন কন্টেন্ট লোড হয়
+            location.reload(); 
+        } else {
+            console.log('Service Worker not active or supported. Refreshing page normally.');
+            location.reload(); // সার্ভিস ওয়ার্কার না থাকলে সাধারণ রিফ্রেশ
+        }
+    });
 </script>
     <script>
         // --- Conversion Constants ---
