@@ -445,6 +445,15 @@
         }
     });
 </script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "0016a9a5-2c48-454b-84b6-37e91b0a8fd8",
+    });
+  });
+</script>
     <script>
         // --- Conversion Constants ---
         const GRAMS_PER_VORI = 11.664;
