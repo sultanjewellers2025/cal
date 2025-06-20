@@ -532,12 +532,14 @@
         </div>
     </div>
 
-    <div id="customAdPopup" class="ad-popup-overlay">
-        <div class="ad-popup-content">
-            <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
-            <h3 id="adPopupTitle"></h3> <p id="adPopupMessage"></p> <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
-        </div>
+<div id="customAdPopup" class="ad-popup-overlay">
+    <div class="ad-popup-content">
+        <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
+        <h3 id="adPopupTitle"></h3> 
+        <p id="adPopupMessage"></p> 
+        <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
     </div>
+</div>
 
 
 <script type="module">
@@ -729,7 +731,7 @@
     }
 
     // --- NEW Custom Ad/Message Popup Functions (Modified for Firebase) ---
-    const customAdPopup = document.getElementById('customAdPopup');
+const customAdPopup = document.getElementById('customAdPopup');
     const adPopupTitleElement = document.getElementById('adPopupTitle');
     const adPopupMessageElement = document.getElementById('adPopupMessage');
     const adPopupButton = document.getElementById('adPopupButton');
@@ -742,6 +744,7 @@
         customAdPopup.classList.remove('show');
     }
 
+    // This listener closes the popup if you click the dark overlay outside the content
     customAdPopup.addEventListener('click', (event) => {
         if (event.target === customAdPopup) {
             closeCustomAdPopup();
