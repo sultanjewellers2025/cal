@@ -534,8 +534,11 @@
 
     <div id="customAdPopup" class="ad-popup-overlay">
         <div class="ad-popup-content">
-            <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
-            <h3 id="adPopupTitle"></h3> <p id="adPopupMessage"></p> <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+            <span class="ad-popup-close-button" onclick="window.closeCustomAdPopup()">&times;</span>
+            <h3 id="adPopupTitle"></h3>
+            <img id="adPopupImage" src="" alt="Popup Image" style="max-width: 100%; height: auto; margin-bottom: 20px; display: none;">
+            <p id="adPopupMessage"></p>
+            <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
         </div>
     </div>
 
@@ -727,11 +730,12 @@
         document.getElementById('displayFinalPrice').textContent = `${finalPrice.toFixed(2)} BDT`;
     }
 
-    // --- NEW Custom Ad/Message Popup Functions (Modified for Firebase) ---
+    // --- NEW Custom Ad/Message Popup Functions ---
     const customAdPopup = document.getElementById('customAdPopup');
     const adPopupTitleElement = document.getElementById('adPopupTitle');
     const adPopupMessageElement = document.getElementById('adPopupMessage');
     const adPopupButton = document.getElementById('adPopupButton');
+    const adPopupImageElement = document.getElementById('adPopupImage'); // NEW: Get image element
 
     // Make functions globally accessible for onclick attributes
     window.openCustomAdPopup = function() {
@@ -779,6 +783,15 @@
                 adPopupTitleElement.textContent = data.title || "Important Announcement!";
                 adPopupMessageElement.textContent = data.message || "No message available.";
                 
+                // NEW: Handle image URL
+                if (data.imageUrl) {
+                    adPopupImageElement.src = data.imageUrl;
+                    adPopupImageElement.style.display = 'block'; // Show the image
+                } else {
+                    adPopupImageElement.src = ''; // Clear source
+                    adPopupImageElement.style.display = 'none'; // Hide the image
+                }
+
                 if (data.buttonText && data.buttonLink) {
                     adPopupButton.textContent = data.buttonText;
                     adPopupButton.href = data.buttonLink;
@@ -788,9 +801,9 @@
                     adPopupButton.href = 'javascript:void(0);';
                 }
                 
-                window.openCustomAdPopup(); // Call the globally accessible function
+                window.openCustomAdPopup(); // Show the popup
             } else {
-                window.closeCustomAdPopup(); // Call the globally accessible function
+                window.closeCustomAdPopup(); // Hide the popup if showPopup is false or data is null
             }
         }, (error) => {
             console.error("Firebase Read Failed: " + error.code);
