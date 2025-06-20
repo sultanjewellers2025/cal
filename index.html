@@ -163,7 +163,7 @@
                 flex: 1 1 100%; /* Stack elements in rows on very small screens */
             }
         }
-        
+
 /* --- Sticky Author Pop-up Styles (Existing) --- */
 .author-popup {
     /* Positioning */
@@ -532,14 +532,12 @@
         </div>
     </div>
 
-<div id="customAdPopup" class="ad-popup-overlay">
-    <div class="ad-popup-content">
-        <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
-        <h3 id="adPopupTitle"></h3> 
-        <p id="adPopupMessage"></p> 
-        <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+    <div id="customAdPopup" class="ad-popup-overlay">
+        <div class="ad-popup-content">
+            <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
+            <h3 id="adPopupTitle"></h3> <p id="adPopupMessage"></p> <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+        </div>
     </div>
-</div>
 
 
 <script type="module">
@@ -555,8 +553,7 @@
         storageBucket: "cal-by-sss.firebasestorage.app",
         messagingSenderId: "1065917326035",
         appId: "1:1065917326035:web:7fd627b71a3a2ecf052a26",
-        // measurementId: "G-YOUR_MEASUREMENT_ID" // Only if you enabled Analytics
-        databaseURL: "https://cal-by-sss-default-rtdb.asia-southeast1.firebasedatabase.app"
+        databaseURL: "https://cal-by-sss-default-rtdb.asia-southeast1.firebasedatabase.app" // Corrected database URL
     };
     
     // Initialize Firebase
@@ -731,23 +728,23 @@
     }
 
     // --- NEW Custom Ad/Message Popup Functions (Modified for Firebase) ---
-const customAdPopup = document.getElementById('customAdPopup');
+    const customAdPopup = document.getElementById('customAdPopup');
     const adPopupTitleElement = document.getElementById('adPopupTitle');
     const adPopupMessageElement = document.getElementById('adPopupMessage');
     const adPopupButton = document.getElementById('adPopupButton');
 
-    function openCustomAdPopup() {
+    // Make functions globally accessible for onclick attributes
+    window.openCustomAdPopup = function() {
         customAdPopup.classList.add('show');
     }
 
-    function closeCustomAdPopup() {
+    window.closeCustomAdPopup = function() {
         customAdPopup.classList.remove('show');
     }
 
-    // This listener closes the popup if you click the dark overlay outside the content
     customAdPopup.addEventListener('click', (event) => {
         if (event.target === customAdPopup) {
-            closeCustomAdPopup();
+            window.closeCustomAdPopup();
         }
     });
 
@@ -791,9 +788,9 @@ const customAdPopup = document.getElementById('customAdPopup');
                     adPopupButton.href = 'javascript:void(0);';
                 }
                 
-                openCustomAdPopup(); // Show the popup
+                window.openCustomAdPopup(); // Call the globally accessible function
             } else {
-                closeCustomAdPopup(); // Hide the popup if showPopup is false or data is null
+                window.closeCustomAdPopup(); // Call the globally accessible function
             }
         }, (error) => {
             console.error("Firebase Read Failed: " + error.code);
