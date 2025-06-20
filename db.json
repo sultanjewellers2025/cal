@@ -1,0 +1,9 @@
+{
+  "popupContent": {
+    "buttonLink": "https://your-website.com/products",
+    "buttonText": "View Products",
+    "message": "Check out our exciting new product line available now!",
+    "showPopup": true,
+    "title": "New Product Launch!"
+  }
+}
