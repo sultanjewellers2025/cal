@@ -6,15 +6,6 @@
     <title>Cal By SSS</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "0016a9a5-2c48-454b-84b6-37e91b0a8fd8",
-    });
-  });
-</script>
     <link rel="manifest" href="/manifest.json">
     <style>
         :root {
@@ -173,7 +164,7 @@
             }
         }
         
-/* --- Sticky Author Pop-up Styles --- */
+/* --- Sticky Author Pop-up Styles (Existing) --- */
 .author-popup {
     /* Positioning */
     position: fixed;
@@ -301,14 +292,129 @@
     background-color: var(--primary-hover-color);
     transform: rotate(30deg); /* Subtle rotation on hover */
 }
+
+/* --- New Custom Ad/Message Popup Styles --- */
+.ad-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Darker, more prominent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Ensure it's on top of everything */
+    visibility: hidden; /* Hidden by default */
+    opacity: 0; /* Fully transparent by default */
+    transition: visibility 0s, opacity 0.4s ease-in-out; /* Smooth fade */
+}
+
+.ad-popup-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.ad-popup-content {
+    background: linear-gradient(135deg, #f0f8ff, #e0f2f7); /* Light gradient background */
+    padding: 35px;
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    transform: scale(0.8); /* Starts smaller for pop-in effect */
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Springy animation */
+    border: 2px solid var(--primary-color); /* Border matching primary color */
+}
+
+.ad-popup-overlay.show .ad-popup-content {
+    transform: scale(1); /* Scales to full size */
+}
+
+.ad-popup-close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 32px; /* Larger close button */
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.ad-popup-close-button:hover {
+    color: #000;
+    transform: rotate(90deg); /* Rotate on hover */
+}
+
+.ad-popup-content h3 {
+    color: #2c3e50; /* Darker heading color */
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.ad-popup-content p {
+    color: #4a4a4a;
+    margin-bottom: 30px;
+    line-height: 1.7;
+    font-size: 17px;
+}
+
+.ad-popup-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 8px; /* More rounded button */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 18px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.ad-popup-button:hover {
+    background-color: var(--primary-hover-color);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* Responsive adjustments for new ad popup */
+@media (max-width: 576px) {
+    .ad-popup-content {
+        padding: 25px;
+        border-radius: 10px;
+    }
+    .ad-popup-content h3 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    .ad-popup-content p {
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+    .ad-popup-close-button {
+        font-size: 28px;
+        top: 10px;
+        right: 15px;
+    }
+    .ad-popup-button {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+}
     </style>
 </head>
 
 <body>
-<div class="author-popup">
-    <p>Developed by <br> <a href="https://shatabdi.bio.link/" target="_blank" rel="noopener noreferrer"><strong>SSS</strong></a></p>
-</div>
-<button id="refreshCache" title="Refresh data (Stale-While-Revalidate)">&#x21BB;</button> <div class="main-container">
+    <div class="author-popup">
+        <p>Developed by <br> <a href="https://shatabdi.bio.link/" target="_blank" rel="noopener noreferrer"><strong>SSS</strong></a></p>
+    </div>
+
+    <button id="refreshCache" title="Refresh data (Stale-While-Revalidate)">&#x21BB;</button>
+
+    <div class="main-container">
         <div class="converter">
             <h2>Gram to Vori, Ana, Roti, Point Converter</h2>
             <label for="gram">Input Gram (e.g., 10.5 or 5+2.5+3)</label>
@@ -424,10 +530,37 @@
                 Total Scrap Gold Value: <strong id="displayFinalPrice">0.00 BDT</strong>
             </div>
         </div>
-
     </div>
-<script>
-    // Service Worker রেজিস্ট্রেশন
+
+    <div id="customAdPopup" class="ad-popup-overlay">
+        <div class="ad-popup-content">
+            <span class="ad-popup-close-button" onclick="closeCustomAdPopup()">&times;</span>
+            <h3 id="adPopupTitle"></h3> <p id="adPopupMessage"></p> <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+        </div>
+    </div>
+
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Your Firebase configuration (REPLACE WITH YOUR ACTUAL CONFIG)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBx7KbiLXNKRjAjhVC8CCnERBFk7oISHL0",
+        authDomain: "cal-by-sss.firebaseapp.com",
+        projectId: "cal-by-sss",
+        storageBucket: "cal-by-sss.firebasestorage.app",
+        messagingSenderId: "1065917326035",
+        appId: "1:1065917326035:web:7fd627b71a3a2ecf052a26",
+        // measurementId: "G-YOUR_MEASUREMENT_ID" // Only if you enabled Analytics
+    };
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // --- Service Worker Registration (Your Existing Code) ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
@@ -440,197 +573,230 @@
         });
     }
 
-    // Refresh Button Logic
+    // Refresh Button Logic (Your Existing Code)
     document.getElementById('refreshCache').addEventListener('click', () => {
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             console.log('Sending refresh message to Service Worker...');
-            // Service Worker-কে রিফ্রেশ করার জন্য একটি মেসেজ পাঠান
             navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_CACHE' });
-            // মেসেজ পাঠানোর পর পেজটি রিফ্রেশ করুন যাতে নতুন কন্টেন্ট লোড হয়
             location.reload(); 
         } else {
             console.log('Service Worker not active or supported. Refreshing page normally.');
-            location.reload(); // সার্ভিস ওয়ার্কার না থাকলে সাধারণ রিফ্রেশ
+            location.reload();
         }
     });
-</script>
-    <script>
-        // --- Conversion Constants ---
-        const GRAMS_PER_VORI = 11.664;
-        const GRAMS_PER_ANA = 0.729; // 1/16 Vori
-        const GRAMS_PER_ROTI = 0.1215; // 1/6 Ana
-        const GRAMS_PER_POINT = 0.01215; // 1/10 Roti
 
-        // --- Gram to Vori, Ana, Roti, Point Conversion ---
-        function convertToVoriAnaRoti() {
-            let gramInputString = document.getElementById('gram').value;
-            let pricePerGramConversion = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
-            let vatPercentageConversion = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
-            let makingChargeConversion = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
+    // --- Conversion Constants (Your Existing Code) ---
+    const GRAMS_PER_VORI = 11.664;
+    const GRAMS_PER_ANA = 0.729; // 1/16 Vori
+    const GRAMS_PER_ROTI = 0.1215; // 1/6 Ana
+    const GRAMS_PER_POINT = 0.01215; // 1/10 Roti
 
-            let totalGram = 0;
-            if (gramInputString) {
-                const parts = gramInputString.split('+');
-                let allPartsValid = true;
-                for (const part of parts) {
-                    const parsedPart = parseFloat(part.trim());
-                    if (isNaN(parsedPart)) {
-                        allPartsValid = false;
-                        break;
-                    }
-                    totalGram += parsedPart;
+    // --- Gram to Vori, Ana, Roti, Point Conversion (Your Existing Code) ---
+    function convertToVoriAnaRoti() {
+        let gramInputString = document.getElementById('gram').value;
+        let pricePerGramConversion = parseFloat(document.getElementById('pricePerGramConversion').value) || 0;
+        let vatPercentageConversion = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
+        let makingChargeConversion = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
+
+        let totalGram = 0;
+        if (gramInputString) {
+            const parts = gramInputString.split('+');
+            let allPartsValid = true;
+            for (const part of parts) {
+                const parsedPart = parseFloat(part.trim());
+                if (isNaN(parsedPart)) {
+                    allPartsValid = false;
+                    break;
                 }
+                totalGram += parsedPart;
+            }
 
-                if (!allPartsValid || totalGram < 0) {
-                    document.getElementById('displayResultVori').textContent = 0;
-                    document.getElementById('displayResultAna').textContent = 0;
-                    document.getElementById('displayResultRoti').textContent = 0;
-                    document.getElementById('displayResultPoint').textContent = 0;
-                    document.getElementById('displayTotalWeightRoti').textContent = '0.00'; // Reset Total Weight
-                    document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
-                    return;
-                }
-            } else {
+            if (!allPartsValid || totalGram < 0) {
                 document.getElementById('displayResultVori').textContent = 0;
                 document.getElementById('displayResultAna').textContent = 0;
                 document.getElementById('displayResultRoti').textContent = 0;
                 document.getElementById('displayResultPoint').textContent = 0;
-                document.getElementById('displayTotalWeightRoti').textContent = '0.00'; // Reset Total Weight
+                document.getElementById('displayTotalWeightRoti').textContent = '0.00';
                 document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
                 return;
             }
-
-            // Convert total grams to the smallest unit (points) for precise breakdown
-            let totalPointsFloat = totalGram / GRAMS_PER_POINT;
-
-            // Use Math.floor to truncate the decimal part, aligning with the example
-            // 955.555... points should yield 955 points for breakdown.
-            let roundedTotalPoints = Math.floor(totalPointsFloat);
-
-            let vori = Math.floor(roundedTotalPoints / 960); // 1 Vori = 16 Ana = 96 Roti = 960 Points
-            let remainingPoints = roundedTotalPoints % 960;
-
-            let ana = Math.floor(remainingPoints / 60); // 1 Ana = 6 Roti = 60 Points
-            remainingPoints %= 60;
-
-            let roti = Math.floor(remainingPoints / 10); // 1 Roti = 10 Points
-            let point = remainingPoints % 10;
-
-            document.getElementById('displayResultVori').textContent = vori;
-            document.getElementById('displayResultAna').textContent = ana;
-            document.getElementById('displayResultRoti').textContent = roti;
-            document.getElementById('displayResultPoint').textContent = point;
-            
-            // Calculate and display Total Weight (Roti Equivalent)
-            const totalWeightRoti = totalGram / GRAMS_PER_ROTI;
-            document.getElementById('displayTotalWeightRoti').textContent = totalWeightRoti.toFixed(2);
-
-            let basePrice = totalGram * pricePerGramConversion;
-            let vatAmount = (basePrice * vatPercentageConversion) / 100;
-            let totalPrice = basePrice + vatAmount + makingChargeConversion;
-
-            document.getElementById('displayResultTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
+        } else {
+            document.getElementById('displayResultVori').textContent = 0;
+            document.getElementById('displayResultAna').textContent = 0;
+            document.getElementById('displayResultRoti').textContent = 0;
+            document.getElementById('displayResultPoint').textContent = 0;
+            document.getElementById('displayTotalWeightRoti').textContent = '0.00';
+            document.getElementById('displayResultTotalPrice').textContent = '0.00 BDT';
+            return;
         }
 
-        // --- Vori, Ana, Roti, Point to Gram Conversion ---
-        function convertToGram() {
-            let vori = parseFloat(document.getElementById('vori').value) || 0;
-            let ana = parseInt(document.getElementById('ana').value) || 0;
-            let roti = parseInt(document.getElementById('roti').value) || 0;
-            let point = parseInt(document.getElementById('point').value) || 0;
+        let totalPointsFloat = totalGram / GRAMS_PER_POINT;
+        let roundedTotalPoints = Math.floor(totalPointsFloat);
 
-            let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
-            let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0; // From first converter
-            let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0; // From first converter
+        let vori = Math.floor(roundedTotalPoints / 960);
+        let remainingPoints = roundedTotalPoints % 960;
 
-            // Validate Ana, Roti, and Point inputs
-            if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
-                (document.getElementById('ana').value !== '' && ana !== parseFloat(document.getElementById('ana').value)) ||
-                (document.getElementById('roti').value !== '' && roti !== parseFloat(document.getElementById('roti').value)) ||
-                (document.getElementById('point').value !== '' && point !== parseFloat(document.getElementById('point').value))) {
-                alert("Please enter valid integer values within specified ranges for Ana (0-15), Roti (0-5), and Point (0-9).");
-                return;
-            }
+        let ana = Math.floor(remainingPoints / 60);
+        remainingPoints %= 60;
 
-            let gram = (vori * GRAMS_PER_VORI) +
-                        (ana * GRAMS_PER_ANA) +
-                        (roti * GRAMS_PER_ROTI) +
-                        (point * GRAMS_PER_POINT);
+        let roti = Math.floor(remainingPoints / 10);
+        let point = remainingPoints % 10;
 
-            document.getElementById('displayResultGram').textContent = gram.toFixed(4);
+        document.getElementById('displayResultVori').textContent = vori;
+        document.getElementById('displayResultAna').textContent = ana;
+        document.getElementById('displayResultRoti').textContent = roti;
+        document.getElementById('displayResultPoint').textContent = point;
+        
+        const totalWeightRoti = totalGram / GRAMS_PER_ROTI;
+        document.getElementById('displayTotalWeightRoti').textContent = totalWeightRoti.toFixed(2);
 
-            let basePrice = gram * pricePerGram;
-            let totalPrice = basePrice;
-            if (pricePerGram > 0 || vatPercentage > 0 || makingCharge > 0) {
-                let vatAmount = (basePrice * vatPercentage) / 100;
-                totalPrice = basePrice + vatAmount + makingCharge;
+        let basePrice = totalGram * pricePerGramConversion;
+        let vatAmount = (basePrice * vatPercentageConversion) / 100;
+        let totalPrice = basePrice + vatAmount + makingChargeConversion;
+
+        document.getElementById('displayResultTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
+    }
+
+    // --- Vori, Ana, Roti, Point to Gram Conversion (Your Existing Code) ---
+    function convertToGram() {
+        let vori = parseFloat(document.getElementById('vori').value) || 0;
+        let ana = parseInt(document.getElementById('ana').value) || 0;
+        let roti = parseInt(document.getElementById('roti').value) || 0;
+        let point = parseInt(document.getElementById('point').value) || 0;
+
+        let pricePerGram = parseFloat(document.getElementById('pricePerGram').value) || 0;
+        let vatPercentage = parseFloat(document.getElementById('vatPercentageConversion').value) || 0;
+        let makingCharge = parseFloat(document.getElementById('makingChargeConversion').value) || 0;
+
+        if (ana < 0 || ana > 15 || roti < 0 || roti > 5 || point < 0 || point > 9 ||
+            (document.getElementById('ana').value !== '' && ana !== parseFloat(document.getElementById('ana').value)) ||
+            (document.getElementById('roti').value !== '' && roti !== parseFloat(document.getElementById('roti').value)) ||
+            (document.getElementById('point').value !== '' && point !== parseFloat(document.getElementById('point').value))) {
+            alert("Please enter valid integer values within specified ranges for Ana (0-15), Roti (0-5), and Point (0-9).");
+            return;
+        }
+
+        let gram = (vori * GRAMS_PER_VORI) +
+                    (ana * GRAMS_PER_ANA) +
+                    (roti * GRAMS_PER_ROTI) +
+                    (point * GRAMS_PER_POINT);
+
+        document.getElementById('displayResultGram').textContent = gram.toFixed(4);
+
+        let basePrice = gram * pricePerGram;
+        let totalPrice = basePrice;
+        if (pricePerGram > 0 || vatPercentage > 0 || makingCharge > 0) {
+            let vatAmount = (basePrice * vatPercentage) / 100;
+            totalPrice = basePrice + vatAmount + makingCharge;
+        } else {
+            totalPrice = 0;
+        }
+
+        document.getElementById('displayTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
+    }
+
+    // --- Scrap Gold Price Calculator Functions (Your Existing Code) ---
+    function toggleUnitInput() {
+        const unitType = document.getElementById('unitTypeScrap').value;
+        document.getElementById('caratInput').style.display = unitType === 'carat' ? 'block' : 'none';
+        document.getElementById('anaInput').style.display = unitType === 'ana' ? 'block' : 'none';
+        calculateVangariPrice();
+    }
+
+    function calculateVangariPrice() {
+        const voriPrice = parseFloat(document.getElementById('voriPrice').value) || 0;
+        const weight = parseFloat(document.getElementById('weight').value) || 0;
+        const unitType = document.getElementById('unitTypeScrap').value;
+
+        let anaValue = 0;
+        if (unitType === 'carat') {
+            const carat = parseFloat(document.getElementById('carat').value) || 0;
+            anaValue = (carat / 24) * 16;
+        } else {
+            anaValue = parseFloat(document.getElementById('anaScrap').value) || 0;
+        }
+
+        const perGram24k = voriPrice / GRAMS_PER_VORI;
+        const perGramScrapPurityAdjusted = perGram24k * (anaValue / 16);
+        const finalPrice = perGramScrapPurityAdjusted * weight;
+
+        document.getElementById('displayAnaEquivalent').textContent = `${anaValue.toFixed(2)} Ana`;
+        document.getElementById('displayPerGram24k').textContent = `${perGram24k.toFixed(2)} BDT`;
+        document.getElementById('displayTotalAnaValue').textContent = `${(perGram24k * anaValue / 16).toFixed(2)} BDT`;
+        document.getElementById('displayPerGramScrap').textContent = `${perGramScrapPurityAdjusted.toFixed(2)} BDT`;
+        document.getElementById('displayFinalPrice').textContent = `${finalPrice.toFixed(2)} BDT`;
+    }
+
+    // --- NEW Custom Ad/Message Popup Functions (Modified for Firebase) ---
+    const customAdPopup = document.getElementById('customAdPopup');
+    const adPopupTitleElement = document.getElementById('adPopupTitle');
+    const adPopupMessageElement = document.getElementById('adPopupMessage');
+    const adPopupButton = document.getElementById('adPopupButton');
+
+    function openCustomAdPopup() {
+        customAdPopup.classList.add('show');
+    }
+
+    function closeCustomAdPopup() {
+        customAdPopup.classList.remove('show');
+    }
+
+    customAdPopup.addEventListener('click', (event) => {
+        if (event.target === customAdPopup) {
+            closeCustomAdPopup();
+        }
+    });
+
+    // --- Firebase Logic for Popup Content ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // ... (Existing calculator initializations) ...
+        toggleUnitInput();
+        calculateVangariPrice();
+
+        document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti);
+        document.getElementById('pricePerGramConversion').addEventListener('input', convertToVoriAnaRoti);
+        document.getElementById('vatPercentageConversion').addEventListener('input', convertToVoriAnaRoti);
+        document.getElementById('makingChargeConversion').addEventListener('input', convertToVoriAnaRoti);
+
+        document.getElementById('vori').addEventListener('input', convertToGram);
+        document.getElementById('ana').addEventListener('input', convertToGram);
+        document.getElementById('roti').addEventListener('input', convertToGram);
+        document.getElementById('point').addEventListener('input', convertToGram);
+        document.getElementById('pricePerGram').addEventListener('input', convertToGram);
+
+        document.getElementById('voriPrice').addEventListener('input', calculateVangariPrice);
+        document.getElementById('unitTypeScrap').addEventListener('change', toggleUnitInput);
+        document.getElementById('carat').addEventListener('input', calculateVangariPrice);
+        document.getElementById('anaScrap').addEventListener('input', calculateVangariPrice);
+        document.getElementById('weight').addEventListener('input', calculateVangariPrice);
+
+        // Listen for changes to 'popupContent' in Firebase Realtime Database
+        const popupRef = ref(database, 'popupContent');
+        onValue(popupRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.showPopup) {
+                adPopupTitleElement.textContent = data.title || "Important Announcement!";
+                adPopupMessageElement.textContent = data.message || "No message available.";
+                
+                if (data.buttonText && data.buttonLink) {
+                    adPopupButton.textContent = data.buttonText;
+                    adPopupButton.href = data.buttonLink;
+                    adPopupButton.style.display = 'inline-block';
+                } else {
+                    adPopupButton.style.display = 'none';
+                    adPopupButton.href = 'javascript:void(0);';
+                }
+                
+                openCustomAdPopup(); // Show the popup
             } else {
-                totalPrice = 0;
+                closeCustomAdPopup(); // Hide the popup if showPopup is false or data is null
             }
-
-            document.getElementById('displayTotalPrice').textContent = totalPrice.toFixed(2) + ' BDT';
-        }
-
-        // --- Scrap Gold Price Calculator Functions ---
-        function toggleUnitInput() {
-            const unitType = document.getElementById('unitTypeScrap').value;
-            document.getElementById('caratInput').style.display = unitType === 'carat' ? 'block' : 'none';
-            document.getElementById('anaInput').style.display = unitType === 'ana' ? 'block' : 'none';
-            calculateVangariPrice(); // Recalculate when unit type changes
-        }
-
-        function calculateVangariPrice() {
-            const voriPrice = parseFloat(document.getElementById('voriPrice').value) || 0;
-            const weight = parseFloat(document.getElementById('weight').value) || 0;
-            const unitType = document.getElementById('unitTypeScrap').value;
-
-            let anaValue = 0;
-            if (unitType === 'carat') {
-                const carat = parseFloat(document.getElementById('carat').value) || 0;
-                anaValue = (carat / 24) * 16;
-            } else {
-                anaValue = parseFloat(document.getElementById('anaScrap').value) || 0;
-            }
-
-            // Calculations
-            const perGram24k = voriPrice / GRAMS_PER_VORI; // 24K price per gram
-            const perGramScrapPurityAdjusted = perGram24k * (anaValue / 16); // Price per gram adjusted for purity (ana equivalent)
-            const finalPrice = perGramScrapPurityAdjusted * weight;
-
-            // Display results
-            document.getElementById('displayAnaEquivalent').textContent = `${anaValue.toFixed(2)} Ana`;
-            document.getElementById('displayPerGram24k').textContent = `${perGram24k.toFixed(2)} BDT`;
-            document.getElementById('displayTotalAnaValue').textContent = `${(perGram24k * anaValue / 16).toFixed(2)} BDT`;
-            document.getElementById('displayPerGramScrap').textContent = `${perGramScrapPurityAdjusted.toFixed(2)} BDT`;
-            document.getElementById('displayFinalPrice').textContent = `${finalPrice.toFixed(2)} BDT`;
-        }
-
-        // --- Event Listeners for Real-time Updates ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initial call to set up the scrap calculator's unit display and initial calculation
-            toggleUnitInput();
-            calculateVangariPrice(); // Run initial calculation for the new calculator
-
-            // Gram to Vori converter
-            document.getElementById('gram').addEventListener('input', convertToVoriAnaRoti);
-            document.getElementById('pricePerGramConversion').addEventListener('input', convertToVoriAnaRoti);
-            document.getElementById('vatPercentageConversion').addEventListener('input', convertToVoriAnaRoti);
-            document.getElementById('makingChargeConversion').addEventListener('input', convertToVoriAnaRoti);
-
-            // Vori to Gram converter
-            document.getElementById('vori').addEventListener('input', convertToGram);
-            document.getElementById('ana').addEventListener('input', convertToGram);
-            document.getElementById('roti').addEventListener('input', convertToGram);
-            document.getElementById('point').addEventListener('input', convertToGram);
-            document.getElementById('pricePerGram').addEventListener('input', convertToGram);
-
-            // Scrap Gold Price Calculator inputs
-            document.getElementById('voriPrice').addEventListener('input', calculateVangariPrice);
-            document.getElementById('unitTypeScrap').addEventListener('change', toggleUnitInput);
-            document.getElementById('carat').addEventListener('input', calculateVangariPrice);
-            document.getElementById('anaScrap').addEventListener('input', calculateVangariPrice);
-            document.getElementById('weight').addEventListener('input', calculateVangariPrice);
+        }, (error) => {
+            console.error("Firebase Read Failed: " + error.code);
+            // Optionally, show a default message or handle the error
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
