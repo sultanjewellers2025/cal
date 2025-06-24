@@ -333,11 +333,12 @@
     transform: scale(1); /* Scales to full size */
 }
 
-.ad-popup-close-button {
+/* Removed ad-popup-close-button style as it will be removed from HTML */
+/* .ad-popup-close-button {
     position: absolute;
     top: 15px;
     right: 20px;
-    font-size: 32px; /* Larger close button */
+    font-size: 32px;
     font-weight: bold;
     color: #555;
     cursor: pointer;
@@ -346,8 +347,8 @@
 
 .ad-popup-close-button:hover {
     color: #000;
-    transform: rotate(90deg); /* Rotate on hover */
-}
+    transform: rotate(90deg);
+} */
 
 .ad-popup-content h3 {
     color: #2c3e50; /* Darker heading color */
@@ -363,6 +364,13 @@
     font-size: 17px;
 }
 
+.ad-popup-buttons { /* New style for button container */
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between buttons */
+    margin-top: 20px;
+}
+
 .ad-popup-button {
     display: inline-block;
     background-color: var(--primary-color);
@@ -373,7 +381,17 @@
     font-weight: 600;
     font-size: 18px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Prevent buttons from shrinking too much */
 }
+
+.ad-popup-button.close-button { /* Style for the new close button */
+    background-color: #6c757d; /* A neutral color for close */
+}
+
+.ad-popup-button.close-button:hover {
+    background-color: #5a6268;
+}
+
 
 .ad-popup-button:hover {
     background-color: var(--primary-hover-color);
@@ -394,14 +412,18 @@
         font-size: 15px;
         margin-bottom: 20px;
     }
-    .ad-popup-close-button {
+    /* .ad-popup-close-button {
         font-size: 28px;
         top: 10px;
         right: 15px;
-    }
+    } */
     .ad-popup-button {
         padding: 12px 25px;
         font-size: 16px;
+    }
+    .ad-popup-buttons {
+        flex-direction: column; /* Stack buttons vertically on very small screens */
+        gap: 10px;
     }
 }
     </style>
@@ -534,11 +556,13 @@
 
     <div id="customAdPopup" class="ad-popup-overlay">
         <div class="ad-popup-content">
-            <span class="ad-popup-close-button" onclick="window.closeCustomAdPopup()">&times;</span>
             <h3 id="adPopupTitle"></h3>
             <img id="adPopupImage" src="" alt="Popup Image" style="max-width: 100%; height: auto; margin-bottom: 20px; display: none;">
             <p id="adPopupMessage"></p>
-            <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+            <div class="ad-popup-buttons">
+                <a href="javascript:void(0);" target="_blank" rel="noopener noreferrer" class="ad-popup-button" id="adPopupButton"></a>
+                <button class="ad-popup-button close-button" id="closeAdPopupButton">Close</button>
+            </div>
         </div>
     </div>
 
@@ -556,7 +580,7 @@
         storageBucket: "cal-by-sss.firebasestorage.app",
         messagingSenderId: "1065917326035",
         appId: "1:1065917326035:web:7fd627b71a3a2ecf052a26",
-        databaseURL: "https://cal-by-sss-default-rtdb.asia-southeast1.firebasedatabase.app" // Corrected database URL
+        databaseURL: "https://cal-by-sss-default-rtdb.asia-southeast1.firebaserule.app" // Corrected database URL
     };
     
     // Initialize Firebase
@@ -735,7 +759,8 @@
     const adPopupTitleElement = document.getElementById('adPopupTitle');
     const adPopupMessageElement = document.getElementById('adPopupMessage');
     const adPopupButton = document.getElementById('adPopupButton');
-    const adPopupImageElement = document.getElementById('adPopupImage'); // NEW: Get image element
+    const adPopupImageElement = document.getElementById('adPopupImage'); 
+    const closeAdPopupButton = document.getElementById('closeAdPopupButton'); // NEW: Get the new close button
 
     // Make functions globally accessible for onclick attributes
     window.openCustomAdPopup = function() {
@@ -746,8 +771,14 @@
         customAdPopup.classList.remove('show');
     }
 
+    // Event listener for the new close button
+    closeAdPopupButton.addEventListener('click', () => {
+        window.closeCustomAdPopup();
+    });
+
     customAdPopup.addEventListener('click', (event) => {
         if (event.target === customAdPopup) {
+            // Keep this for clicking outside the content to close
             window.closeCustomAdPopup();
         }
     });
@@ -783,7 +814,7 @@
                 adPopupTitleElement.textContent = data.title || "Important Announcement!";
                 adPopupMessageElement.textContent = data.message || "No message available.";
                 
-                // NEW: Handle image URL
+                // Handle image URL
                 if (data.imageUrl) {
                     adPopupImageElement.src = data.imageUrl;
                     adPopupImageElement.style.display = 'block'; // Show the image
